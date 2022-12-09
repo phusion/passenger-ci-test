@@ -14,7 +14,7 @@
     "express": "^4.17.3",
     "jquery": "^3.6.0",
     "mini-css-extract-plugin": "^2.6.0",
-    "mocha": "^6.2.3",
+    "mocha": "^10.1.0",
     "multer": "^1.4.4",
     "preact": "^8.5.3",
     "should": "^2.1.1",
