@@ -92,8 +92,18 @@ public:
 	};
 
 	struct RouteResult {
-		Process *process;
-		bool finished;
+		/** The Process to route the request to, or nullptr if no process can be routed to. */
+		Process * const process;
+		/**
+		 * If `process` is nullptr, then `finished` indicates whether another `Group::route()`
+		 * call on a different request *could* succeed, meaning that the caller should continue
+		 * calling `Group::route()` if there are more queued requests that need to be processed.
+		 *
+		 * Usually `finished` is false because all processes are totally busy. But in some cases,
+		 * for example when using sticky sessions, it could be true because other requests can
+		 * potentially be routed to other processes.
+		 */
+		const bool finished;
 
 		RouteResult(Process *p, bool _finished = false)
 			: process(p),
@@ -223,9 +233,9 @@ public:
 	/****** Process list management ******/
 
 	Process *findProcessWithStickySessionId(unsigned int id) const;
-	Process *findProcessWithStickySessionIdOrLowestBusyness(unsigned int id) const;
-	Process *findProcessWithLowestBusyness(const ProcessList &processes) const;
-	Process *findEnabledProcessWithLowestBusyness() const;
+	Process *findBestProcessPreferringStickySessionId(unsigned int id) const;
+	Process *findBestProcess(const ProcessList &processes) const;
+	Process *findBestEnabledProcess() const;
 
 	void addProcessToList(const ProcessPtr &process, ProcessList &destination);
 	void removeProcessFromList(const ProcessPtr &process, ProcessList &source);

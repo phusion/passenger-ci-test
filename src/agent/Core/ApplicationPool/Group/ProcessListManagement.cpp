@@ -63,72 +63,75 @@ Group::findProcessWithStickySessionId(unsigned int id) const {
 	return NULL;
 }
 
+/**
+ * Return the process with the given sticky session ID if it exists.
+ * If not, then find the "best" enabled process to route a request to,
+ * according to the same criteria documented for findBestProcess().
+ *
+ * - If the process with the given sticky session ID exists, then always
+ *   returns that process. Meaning that this process could be `!canBeRoutedTo()`.
+ * - If there is no process that can be routed to, then returns nullptr.
+ */
 Process *
-Group::findProcessWithStickySessionIdOrLowestBusyness(unsigned int id) const {
-	int leastBusyProcessIndex = -1;
-	int lowestBusyness = 0;
-	unsigned int i, size = enabledProcessBusynessLevels.size();
-	const int *enabledProcessBusynessLevels = &this->enabledProcessBusynessLevels[0];
+Group::findBestProcessPreferringStickySessionId(unsigned int id) const {
+	Process *bestProcess = nullptr;
+	ProcessList::const_iterator it;
+	ProcessList::const_iterator end = enabledProcesses.end();
 
-	for (i = 0; i < size; i++) {
-		Process *process = enabledProcesses[i].get();
+	for (it = enabledProcesses.begin(); it != end; it++) {
+		Process *process = it->get();
 		if (process->getStickySessionId() == id) {
 			return process;
-		} else if (leastBusyProcessIndex == -1 || enabledProcessBusynessLevels[i] < lowestBusyness) {
-			leastBusyProcessIndex = i;
-			lowestBusyness = enabledProcessBusynessLevels[i];
+		} else if (!process->isTotallyBusy()
+			&& (
+				bestProcess == nullptr
+				|| process->generation > bestProcess->generation
+				|| (process->generation == bestProcess->generation && process->spawnStartTime < bestProcess->spawnStartTime)
+				|| (process->generation == bestProcess->generation && process->spawnStartTime == bestProcess->spawnStartTime && process->busyness() < bestProcess->busyness())
+			)
+		) {
+			bestProcess = process;
 		}
 	}
 
-	if (leastBusyProcessIndex == -1) {
-		return NULL;
-	} else {
-		return enabledProcesses[leastBusyProcessIndex].get();
-	}
-}
-
-Process *
-Group::findProcessWithLowestBusyness(const ProcessList &processes) const {
-	if (processes.empty()) {
-		return NULL;
-	}
-
-	int lowestBusyness = -1;
-	Process *leastBusyProcess = NULL;
-	ProcessList::const_iterator it;
-	ProcessList::const_iterator end = processes.end();
-	for (it = processes.begin(); it != end; it++) {
-		Process *process = (*it).get();
-		int busyness = process->busyness();
-		if (lowestBusyness == -1 || lowestBusyness > busyness) {
-			lowestBusyness = busyness;
-			leastBusyProcess = process;
-		}
-	}
-	return leastBusyProcess;
+	return bestProcess;
 }
 
 /**
- * Cache-optimized version of findProcessWithLowestBusyness() for the common case.
+ * Given a ProcessList, find the "best" process to route a request to.
+ * At the moment, "best" is defined as the process with the highest generation,
+ * lowest start time, and lowest busyness, in that order of priority.
+ *
+ * If there is no process that can be routed to, then returns nullptr.
+ *
+ * @post result != nullptr || result.canBeRoutedTo()
  */
 Process *
-Group::findEnabledProcessWithLowestBusyness() const {
-	if (enabledProcesses.empty()) {
-		return NULL;
+Group::findBestProcess(const ProcessList &processes) const {
+	if (processes.empty()) {
+		return nullptr;
 	}
 
-	int leastBusyProcessIndex = -1;
-	int lowestBusyness = 0;
-	unsigned int i, size = enabledProcessBusynessLevels.size();
-	const int *enabledProcessBusynessLevels = &this->enabledProcessBusynessLevels[0];
+	Process *bestProcess = nullptr;
+	ProcessList::const_iterator it;
+	ProcessList::const_iterator end = processes.end();
 
-	for (i = 0; i < size; i++) {
-		if (leastBusyProcessIndex == -1 || enabledProcessBusynessLevels[i] < lowestBusyness) {
-			leastBusyProcessIndex = i;
-			lowestBusyness = enabledProcessBusynessLevels[i];
+	for (it = processes.begin(); it != end; it++) {
+		Process *process = it->get();
+
+		if (!process->isTotallyBusy()
+			&& (
+				bestProcess == nullptr
+				|| process->generation > bestProcess->generation
+				|| (process->generation == bestProcess->generation && process->spawnStartTime < bestProcess->spawnStartTime)
+				|| (process->generation == bestProcess->generation && process->spawnStartTime == bestProcess->spawnStartTime && process->busyness() < bestProcess->busyness())
+			)
+		) {
+			bestProcess = process;
 		}
 	}
-	return enabledProcesses[leastBusyProcessIndex].get();
+
+	return bestProcess;
 }
 
 /**

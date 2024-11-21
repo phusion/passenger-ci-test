@@ -30,6 +30,7 @@
 	#include <Core/ApplicationPool/Pool.h>
 #endif
 #include <Core/ApplicationPool/Group.h>
+#include <cassert>
 
 /*************************************************************************
  *
@@ -64,16 +65,17 @@ Group::RouteResult
 Group::route(const Options &options) const {
 	if (OXT_LIKELY(enabledCount > 0)) {
 		if (options.stickySessionId == 0) {
-			Process *process = findEnabledProcessWithLowestBusyness();
-			if (process->canBeRoutedTo()) {
+			Process *process = findBestProcess(enabledProcesses);
+			if (process != nullptr) {
+				assert(process->canBeRoutedTo());
 				return RouteResult(process);
 			} else {
 				return RouteResult(NULL, true);
 			}
 		} else {
-			Process *process = findProcessWithStickySessionIdOrLowestBusyness(
+			Process *process = findBestProcessPreferringStickySessionId(
 				options.stickySessionId);
-			if (process != NULL) {
+			if (process != nullptr) {
 				if (process->canBeRoutedTo()) {
 					return RouteResult(process);
 				} else {
@@ -84,8 +86,9 @@ Group::route(const Options &options) const {
 			}
 		}
 	} else {
-		Process *process = findProcessWithLowestBusyness(disablingProcesses);
-		if (process->canBeRoutedTo()) {
+		Process *process = findBestProcess(disablingProcesses);
+		if (process != nullptr) {
+			assert(process->canBeRoutedTo());
 			return RouteResult(process);
 		} else {
 			return RouteResult(NULL, true);
@@ -310,9 +313,8 @@ Group::get(const Options &newOptions, const GetCallback &callback,
 		assert(m_spawning || restarting() || poolAtFullCapacity());
 
 		if (disablingCount > 0 && !restarting()) {
-			Process *process = findProcessWithLowestBusyness(disablingProcesses);
-			assert(process != NULL);
-			if (!process->isTotallyBusy()) {
+			Process *process = findBestProcess(disablingProcesses);
+			if (process != nullptr && !process->isTotallyBusy()) {
 				return newSession(process, newOptions.currentTime);
 			}
 		}

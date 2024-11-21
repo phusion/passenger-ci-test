@@ -53,6 +53,10 @@
 #include <Core/SpawningKit/Result.h>
 #include <Shared/ApplicationPoolApiKey.h>
 
+namespace tut {
+	template<class Data> class test_object;
+}
+
 namespace Passenger {
 namespace ApplicationPool2 {
 
@@ -99,6 +103,9 @@ typedef boost::container::vector<ProcessPtr> ProcessList;
  */
 class Process {
 public:
+	friend class Group;
+	template<class Data> friend class tut::test_object;
+
 	static const unsigned int MAX_SOCKETS_ACCEPTING_HTTP_REQUESTS = 3;
 
 private:
@@ -388,6 +395,10 @@ public:
 
 	/** Last time when a session was opened for this Process. */
 	unsigned long long lastUsed;
+    /** Which generation of app processes this one belongs to,
+        inherited from the app group, incremented when a restart
+		is initiated*/
+	const unsigned int generation;
 	/** Number of sessions currently open.
 	 * @invariant session >= 0
 	 */
@@ -450,8 +461,7 @@ public:
 	/** Collected by Pool::collectAnalytics(). */
 	ProcessMetrics metrics;
 
-
-	Process(const BasicGroupInfo *groupInfo, const Json::Value &args)
+	Process(const BasicGroupInfo *groupInfo, const unsigned int gen, const Json::Value &args)
 		: info(this, groupInfo, args),
 		  socketsAcceptingHttpRequestsCount(0),
 		  spawnerCreationTime(getJsonUint64Field(args, "spawner_creation_time")),
@@ -462,6 +472,7 @@ public:
 		  refcount(1),
 		  index(-1),
 		  lastUsed(spawnEndTime),
+		  generation(gen),
 		  sessions(0),
 		  processed(0),
 		  lifeStatus(ALIVE),
@@ -475,7 +486,7 @@ public:
 		indexSocketsAcceptingHttpRequests();
 	}
 
-	Process(const BasicGroupInfo *groupInfo, const SpawningKit::Result &skResult,
+	Process(const BasicGroupInfo *groupInfo, const unsigned int gen, const SpawningKit::Result &skResult,
 		const Json::Value &args)
 		: info(this, groupInfo, skResult),
 		  socketsAcceptingHttpRequestsCount(0),
@@ -487,6 +498,7 @@ public:
 		  refcount(1),
 		  index(-1),
 		  lastUsed(spawnEndTime),
+		  generation(gen),
 		  sessions(0),
 		  processed(0),
 		  lifeStatus(ALIVE),
