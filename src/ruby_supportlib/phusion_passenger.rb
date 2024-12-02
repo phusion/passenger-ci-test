@@ -237,7 +237,7 @@ module PhusionPassenger
   # Using this method also has two more advantages:
   #
   #  1. It is immune to Bundler's load path mangling code.
-  #  2. It is faster than plan require() because it doesn't need to
+  #  2. It is faster than plain require() because it doesn't need to
   #     scan the entire load path.
   def self.require_passenger_lib(name)
     require("#{ruby_libdir}/phusion_passenger/#{name}")
