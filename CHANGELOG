@@ -5,6 +5,7 @@ Release 6.0.24 (Not yet released)
  * [Enterprise] Fix a memory corruption-related crash that could occur during rolling restarting.
  * [Ubuntu] Add packages for Ubuntu 24.10 "oracular".
  * [Ruby] Specify rackup version to avoid broken 1.0 gem. Closes GH-2559.
+ * Fixes compatibility with Ruby apps whose Gemfile.lock depends on base64.
  * Upgrades Boost from 1.85 -> 1.86.
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
    - ccache 4.10.1 -> 4.10.2

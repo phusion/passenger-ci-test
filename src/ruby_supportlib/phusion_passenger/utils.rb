@@ -23,8 +23,6 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #  THE SOFTWARE.
 
-require 'base64'
-
 module PhusionPassenger
 
   # Utility functions.
@@ -182,19 +180,11 @@ module PhusionPassenger
       end
     end
 
-    if Base64.respond_to?(:strict_encode64)
-      def base64(data)
-        Base64.strict_encode64(data)
-      end
-    else
-      # Base64-encodes the given data. Newlines are removed.
-      # This is like `Base64.strict_encode64`, but also works
-      # on Ruby 1.8 which doesn't have that method.
-      def base64(data)
-        result = Base64.encode64(data)
-        result.delete!("\n")
-        result
-      end
+    # Returns a base64 encoded string without line breaks and padding.
+    # Like Base64.strict_encode64, but without a dependency on the
+    # 'base64' library/gem.
+    def base64(data)
+      [data].pack("m0")
     end
 
     # Returns a string which reports the backtraces for all threads,
