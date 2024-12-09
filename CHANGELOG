@@ -1,4 +1,9 @@
-Release 6.0.24 (Not yet released)
+Release 6.0.25 (Not yet released)
+-------------
+ * 
+
+
+Release 6.0.24
 -------------
  * [Nginx] Upgrades preferred Nginx to 1.26.2 from 1.26.1.
  * [Enterprise] Smarter rolling restarts for better performance and reliability. We changed the way we route requests. Instead of picking the least-busy process, we now first prioritize new processes first. During a rolling restart, this new behavior leads to more efficient utilization of application caches, faster validation of new rollouts, and faster recovery from problematic deployments. Closes GH-2551.
