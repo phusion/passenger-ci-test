@@ -114,8 +114,7 @@ module PhusionPassenger
           :start_command => "true", # Doesn't matter
           :ping_command  => "true", # Doesn't matter
           :pid_file      => @options[:pid_file],
-          :log_file      => "/dev/null",
-          :timeout       => 25
+          :log_file      => "/dev/null"
         )
       end
     end
