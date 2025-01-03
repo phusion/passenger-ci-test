@@ -54,6 +54,7 @@ struct ConfigChangeRequest {
 	vector<Controller::ConfigChangeRequest *> forController;
 	ServerKit::ConfigChangeRequest forApiServerKit;
 	ApiServer::ConfigChangeRequest forApiServer;
+	AdminPanelConnector::ConfigChangeRequest forAdminPanelConnector;
 
 	ConfigChangeRequest()
 		: counter(0)
@@ -145,6 +146,18 @@ asyncPrepareConfigChangeForApiServer(const Json::Value &updates, ConfigChangeReq
 	asyncPrepareConfigChangeCompletedOne(req);
 }
 
+static void
+asyncPrepareConfigChangeForAdminPanelConnectorDone(const vector<ConfigKit::Error> &errors,
+	AdminPanelConnector::ConfigChangeRequest &_, ConfigChangeRequest *req)
+{
+	vector<ConfigKit::Error> translatedErrors = coreSchema->adminPanelConnector.translator.reverseTranslate(errors);
+	boost::lock_guard<boost::mutex> l(workingObjects->configSyncher);
+	P_DEBUG("asyncPrepareConfigChangeForAdminPanelConnectorDone: counter "
+		<< req->counter << " -> " << (req->counter - 1));
+	req->errors.insert(req->errors.begin(), translatedErrors.begin(), translatedErrors.end());
+	asyncPrepareConfigChangeCompletedOne(req);
+}
+
 //
 //
 
@@ -199,6 +212,15 @@ asyncPrepareConfigChange(const Json::Value &updates, ConfigChangeRequest *req,
 			asyncPrepareConfigChangeForApiServer, updates, req));
 	}
 
+	if (wo->adminPanelConnector != NULL) {
+		req->counter++;
+		wo->adminPanelConnector->asyncPrepareConfigChange(
+			coreSchema->adminPanelConnector.translator.translate(updates),
+			req->forAdminPanelConnector,
+			boost::bind(asyncPrepareConfigChangeForAdminPanelConnectorDone,
+				boost::placeholders::_1, boost::placeholders::_2, req));
+	}
+
 	/***************/
 	/***************/
 
@@ -246,6 +268,16 @@ asyncCommitConfigChangeForApiServer(ConfigChangeRequest *req) {
 	asyncCommitConfigChangeCompletedOne(req);
 }
 
+static void
+asyncCommitConfigChangeForAdminPanelConnectorDone(AdminPanelConnector::ConfigChangeRequest &_,
+	ConfigChangeRequest *req)
+{
+	boost::lock_guard<boost::mutex> l(workingObjects->configSyncher);
+	P_DEBUG("asyncCommitConfigChangeForAdminPanelConnectorDone: counter "
+		<< req->counter << " -> " << (req->counter - 1));
+	asyncCommitConfigChangeCompletedOne(req);
+}
+
 //
 //
 
@@ -289,6 +321,14 @@ asyncCommitConfigChange(ConfigChangeRequest *req, const CommitConfigChangeCallba
 			asyncCommitConfigChangeForApiServer, req));
 	}
 
+	if (wo->adminPanelConnector != NULL) {
+		req->counter++;
+		wo->adminPanelConnector->asyncCommitConfigChange(
+			req->forAdminPanelConnector,
+			boost::bind(asyncCommitConfigChangeForAdminPanelConnectorDone,
+				boost::placeholders::_1, req));
+	}
+
 	/***************/
 	/***************/
 
@@ -321,7 +361,7 @@ manipulateLoggingKitConfig(const ConfigKit::Store &coreConfig,
 	const Json::Value &loggingKitConfig)
 {
 	Json::Value result = loggingKitConfig;
-	result["buffer_logs"] = false;
+	result["buffer_logs"] = !coreConfig["admin_panel_url"].isNull();
 	return result;
 }
 
