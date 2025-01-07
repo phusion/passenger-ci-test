@@ -4,7 +4,13 @@ Release 6.0.25 (Not yet released)
  * [Standalone] Adds a config option to specify the stop timeout for Passenger: `--stop-timeout 120` or `PASSENGER_STOP_TIMEOUT=120`.
  * [Standalone] Changes Passenger's (not apps') start timeout to 25s (from 15s), stop timeouts default to 60s.
  * [Ruby] Fixes an issue where Bundler would try to re-exec the process name instead of the script. Closes GH-2567 and GH-2577.
- * 
+ * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+   - cmake: 3.31.2 -> 3.31.3
+   - curl: 8.11.0 -> 8.11.1
+   - libiconv: 1.17 -> 1.18
+   - rubygems: 3.5.23 -> 3.6.2
+   - rubies:
+     - added 3.4.1
 
 
 Release 6.0.24
@@ -192,12 +198,12 @@ Release 6.0.17
  * Changes minimum supported macOS version to 10.14 Mojave.
  * Adds support for a `PASSENGER_MAX_LOG_LINE_LENGTH_BYTES` environment variable. The default length remains at 8KB. Closes GH-2413.
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
-   - curl: 7.86.0 → 7.87.0
-   - git: 2.38.1 → 2.39.0
-   - gnupg: 2.3.8 → 2.4.0
-   - libksba: 1.6.2 → 1.6.3
-   - openssl: 1.1.1s → 3.0.7
-   - rubygems: 3.3.26 → 3.4.3
+   - curl: 7.86.0 -> 7.87.0
+   - git: 2.38.1 -> 2.39.0
+   - gnupg: 2.3.8 -> 2.4.0
+   - libksba: 1.6.2 -> 1.6.3
+   - openssl: 1.1.1s -> 3.0.7
+   - rubygems: 3.3.26 -> 3.4.3
    - rubies: added 3.2.0
 
 
@@ -208,20 +214,20 @@ Release 6.0.16
  * Adds systemd private tmpdir workaround on Ubuntu/Debian. Closes GH-2397.
  * Downgrade jsoncpp to 1.8.1 from 1.9.5 to fix invalid json generation bug. Closes GH-2445.
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
-   - cmake: 3.24.2 → 3.25.1
-   - curl: 7.85.0 → 7.86.0
-   - git 2.37.3 → 2.38.1
-   - gnupg: 2.3.7 → 2.3.8
-   - libgpg_error 1.45 → 1.46
-   - libksba 1.6.1 → 1.6.2
-   - openssl: 1.1.1q → 1.1.1s
-   - rubygems 3.3.22 → 3.3.26
-   - s3cmd 2.2.0 → 2.3.0
-   - zlib: 1.2.12 → 1.2.13
+   - cmake: 3.24.2 -> 3.25.1
+   - curl: 7.85.0 -> 7.86.0
+   - git 2.37.3 -> 2.38.1
+   - gnupg: 2.3.7 -> 2.3.8
+   - libgpg_error 1.45 -> 1.46
+   - libksba 1.6.1 -> 1.6.2
+   - openssl: 1.1.1q -> 1.1.1s
+   - rubygems 3.3.22 -> 3.3.26
+   - s3cmd 2.2.0 -> 2.3.0
+   - zlib: 1.2.12 -> 1.2.13
    - rubies:
-     - 2.7.6 → 2.7.7
-     - 3.0.4 → 3.0.5
-     - 3.1.2 → 3.1.3
+     - 2.7.6 -> 2.7.7
+     - 3.0.4 -> 3.0.5
+     - 3.1.2 -> 3.1.3
 
 
 Release 6.0.15
@@ -238,16 +244,16 @@ Release 6.0.15
  * Improve Solaris support for 11.3 & 11.4.
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
 
- - ccache: 4.6 → 4.6.3
- - cmake: 3.23.1 → 3.24.2
- - curl: 7.82.0 → 7.85.0
- - git: 2.36.0 → 2.37.3
- - gnupg: 2.3.5 → 2.3.7
- - libiconv: 1.16 → 1.17
- - libksba: 1.6.0 → 1.6.1
- - openssl: 1.1.1n → 1.1.1q
- - pinentry: 1.2.0 → 1.2.1
- - rubygems: 3.3.12 → 3.3.22
+ - ccache: 4.6 -> 4.6.3
+ - cmake: 3.23.1 -> 3.24.2
+ - curl: 7.82.0 -> 7.85.0
+ - git: 2.36.0 -> 2.37.3
+ - gnupg: 2.3.5 -> 2.3.7
+ - libiconv: 1.16 -> 1.17
+ - libksba: 1.6.0 -> 1.6.1
+ - openssl: 1.1.1n -> 1.1.1q
+ - pinentry: 1.2.0 -> 1.2.1
+ - rubygems: 3.3.12 -> 3.3.22
 
 
 Release 6.0.14
@@ -259,19 +265,19 @@ Release 6.0.14
  * Removed google apis from error pages for easier GDPR compliance.
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
 
-   - cmake 3.22.3 → 3.23.1
-   - git 2.35.1 → 2.36.0
-   - gnupg 2.3.4 → 2.3.5
-   - libgcrypt 1.9.4 → 1.10.1
-   - libgpg_error 1.44 → 1.45
-   - ntbtls 0.3.0 → 0.3.1
-   - rubygems 3.3.9 → 3.3.12
-   - zlib 1.2.11 → 1.2.12
+   - cmake 3.22.3 -> 3.23.1
+   - git 2.35.1 -> 2.36.0
+   - gnupg 2.3.4 -> 2.3.5
+   - libgcrypt 1.9.4 -> 1.10.1
+   - libgpg_error 1.44 -> 1.45
+   - ntbtls 0.3.0 -> 0.3.1
+   - rubygems 3.3.9 -> 3.3.12
+   - zlib 1.2.11 -> 1.2.12
    - ruby
-     - 2.6.9 → 2.6.10
-     - 2.7.5 → 2.7.6
-     - 3.0.3 → 3.0.4
-     - 3.1.1 → 3.1.2
+     - 2.6.9 -> 2.6.10
+     - 2.7.5 -> 2.7.6
+     - 3.0.3 -> 3.0.4
+     - 3.1.1 -> 3.1.2
 
 
 Release 6.0.13
@@ -280,7 +286,7 @@ Release 6.0.13
  * Fix compilation on FreeBSD 13. Closes GH-2402.
  * [Ruby] Fixes app process crash when ECONNRESET received.
  * Fix automated fetching of pcre source for installer scripts.
- * Bump preferred nginx 1.20.1 → 1.20.2.
+ * Bump preferred nginx 1.20.1 -> 1.20.2.
  * [Ruby] Add option to preload bundler. Closes GH-2409.
 
    - Apache: PassengerPreloadBundler
@@ -291,22 +297,22 @@ Release 6.0.13
  * [RPMs] EL8 RPMs are now built on Rocky linux, and should be compatible with Alma, Rocky, CentOS, and RHEL.
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
 
-   - ccache 4.4.2 → 4.6
-   - cmake 3.21.4 → 3.22.3
-   - curl 7.79.1 → 7.82.0
-   - git 2.33.1 → 2.35.1
-   - gnupg 2.3.3 → 2.3.4
-   - libgpg_error 1.42 → 1.44
-   - ntbtls 0.2.0 → 0.3.0
-   - openssl 1.1.1l → 1.1.1n
-   - rubygems 3.2.30 → 3.3.9
-   - zstd 1.5.0 → 1.5.2
+   - ccache 4.4.2 -> 4.6
+   - cmake 3.21.4 -> 3.22.3
+   - curl 7.79.1 -> 7.82.0
+   - git 2.33.1 -> 2.35.1
+   - gnupg 2.3.3 -> 2.3.4
+   - libgpg_error 1.42 -> 1.44
+   - ntbtls 0.2.0 -> 0.3.0
+   - openssl 1.1.1l -> 1.1.1n
+   - rubygems 3.2.30 -> 3.3.9
+   - zstd 1.5.0 -> 1.5.2
    - ruby
      - dropped 2.4.10
      - dropped 2.5.9
-     - 2.6.8 → 2.6.9
-     - 2.7.4 → 2.7.5
-     - 3.0.2 → 3.0.3
+     - 2.6.8 -> 2.6.9
+     - 2.7.4 -> 2.7.5
+     - 3.0.2 -> 3.0.3
      - added 3.1.1
 
 
@@ -324,13 +330,13 @@ Release 6.0.12
  * [Nginx] add new config option to choose the status code returned when application spawning fails. (passenger_spawn_exception_status_code).
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
 
- - ccache: 4.4.1 → 4.4.2
- - cmake: 3.21.2 → 3.21.4
- - curl: 7.78.0 → 7.79.1
- - git: 2.33.0 → 2.33.1
- - gnupg: 2.3.2 → 2.3.3
- - rubygems: 3.2.27 → 3.2.30
- - s3cmd: 2.1.0 → 2.2.0
+ - ccache: 4.4.1 -> 4.4.2
+ - cmake: 3.21.2 -> 3.21.4
+ - curl: 7.78.0 -> 7.79.1
+ - git: 2.33.0 -> 2.33.1
+ - gnupg: 2.3.2 -> 2.3.3
+ - rubygems: 3.2.27 -> 3.2.30
+ - s3cmd: 2.1.0 -> 2.2.0
 
 
 Release 6.0.11
@@ -341,19 +347,19 @@ Release 6.0.11
  * Fix compilation on GCC < 4.5.
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
 
-    - ccache: 4.3 → 4.4.1
-    - cmake: 3.20.5 → 3.21.2
-    - curl: 7.77.0 → 7.78.0
-    - git: 2.32.0 → 2.33.0
-    - gnupg: 2.3.1 → 2.3.2
-    - libgcrypt: 1.9.3 → 1.9.4
-    - openssl: 1.1.1k → 1.1.1l
-    - pinentry: 1.1.1 → 1.2.0
-    - rubygems: 3.2.21 → 3.2.27
+    - ccache: 4.3 -> 4.4.1
+    - cmake: 3.20.5 -> 3.21.2
+    - curl: 7.77.0 -> 7.78.0
+    - git: 2.32.0 -> 2.33.0
+    - gnupg: 2.3.1 -> 2.3.2
+    - libgcrypt: 1.9.3 -> 1.9.4
+    - openssl: 1.1.1k -> 1.1.1l
+    - pinentry: 1.1.1 -> 1.2.0
+    - rubygems: 3.2.21 -> 3.2.27
     - rubies:
-      - 2.6.7 → 2.6.8
-      - 2.7.3 → 2.7.4
-      - 3.0.1 → 3.0.2
+      - 2.6.7 -> 2.6.8
+      - 2.7.3 -> 2.7.4
+      - 3.0.1 -> 3.0.2
 
 
 Release 6.0.10
@@ -363,11 +369,11 @@ Release 6.0.10
  * [Nginx] The preferred PCRE version is now 8.45 (previously 8.44).
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
 
-    - cmake 3.20.3 → 3.20.5
-    - git 2.31.1 → 2.32.0
-    - libksba 1.5.1 → 1.6.0
-    - rubygems 3.2.19 → 3.2.21
-    - pcre 8.44 → 8.45
+    - cmake 3.20.3 -> 3.20.5
+    - git 2.31.1 -> 2.32.0
+    - libksba 1.5.1 -> 1.6.0
+    - rubygems 3.2.19 -> 3.2.21
+    - pcre 8.44 -> 8.45
 
 
 Release 6.0.9
@@ -378,25 +384,25 @@ Release 6.0.9
  * Remove prebuilt packages for Ubuntu Groovy.
  * Properly support HTTP 418. Contributed by Thomas Pfister.
  * Fix several C++ warnings about implicit copy operators/constructors.
- * Bump preferred nginx 1.18.0 → 1.20.1.
+ * Bump preferred nginx 1.18.0 -> 1.20.1.
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
 
-    - ccache 4.2 → 4.3
-    - cmake 3.19.7 → 3.20.3
-    - curl 7.75.0 → 7.77.0
-    - git 2.31.0 → 2.31.1
-    - gnupg 2.2.27 → 2.3.1
-    - libgcrypt 1.9.2 → 1.9.3
-    - libksba 1.5.0 → 1.5.1
-    - ntbTLS added → 0.2.0
-    - zlib 1.4.9 → 1.5.0
-    - rubygems 3.2.15 → 3.2.19
+    - ccache 4.2 -> 4.3
+    - cmake 3.19.7 -> 3.20.3
+    - curl 7.75.0 -> 7.77.0
+    - git 2.31.0 -> 2.31.1
+    - gnupg 2.2.27 -> 2.3.1
+    - libgcrypt 1.9.2 -> 1.9.3
+    - libksba 1.5.0 -> 1.5.1
+    - ntbTLS added -> 0.2.0
+    - zlib 1.4.9 -> 1.5.0
+    - rubygems 3.2.15 -> 3.2.19
     - ruby:
-      - 2.3.8 → removed
-      - 2.5.8 → 2.5.9
-      - 2.6.6 → 2.6.7
-      - 2.7.2 → 2.7.3
-      - 3.0.0 → 3.0.1
+      - 2.3.8 -> removed
+      - 2.5.8 -> 2.5.9
+      - 2.6.6 -> 2.6.7
+      - 2.7.2 -> 2.7.3
+      - 3.0.0 -> 3.0.1
 
 
 Release 6.0.8
@@ -411,19 +417,19 @@ Release 6.0.8
  * No-longer build 32 bit prebuilt binaries, as HBB dropped support.
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
 
-    - ccache_version: 4.0 → 4.2
-    - cmake_version: 3.18.4 → 3.19.7
-    - curl_version: 7.73.0 → 7.75.0
-    - git_version: 2.29.1 → 2.31.0
-    - gnupg_version: 2.2.23 → 2.2.27
-    - libassuan_version: 2.5.4 → 2.5.5
-    - libgcrypt_version: 1.8.7 → 1.9.2
-    - libgpg_error_version: 1.39 → 1.42
-    - libksba_version: 1.4.0 → 1.5.0
-    - openssl_version: 1.1.1h → 1.1.1k
-    - pinentry_version: 1.1.0 → 1.1.1
-    - rubygems_version: 3.1.4 → 3.2.15
-    - zstd_version: 1.4.5 → 1.4.9
+    - ccache_version: 4.0 -> 4.2
+    - cmake_version: 3.18.4 -> 3.19.7
+    - curl_version: 7.73.0 -> 7.75.0
+    - git_version: 2.29.1 -> 2.31.0
+    - gnupg_version: 2.2.23 -> 2.2.27
+    - libassuan_version: 2.5.4 -> 2.5.5
+    - libgcrypt_version: 1.8.7 -> 1.9.2
+    - libgpg_error_version: 1.39 -> 1.42
+    - libksba_version: 1.4.0 -> 1.5.0
+    - openssl_version: 1.1.1h -> 1.1.1k
+    - pinentry_version: 1.1.0 -> 1.1.1
+    - rubygems_version: 3.1.4 -> 3.2.15
+    - zstd_version: 1.4.5 -> 1.4.9
     - ruby_versions + 3.0.0
 
 
@@ -492,9 +498,9 @@ Release 6.0.5
  * [Nginx] The preferred PCRE version is now 8.44 (previously 8.43).
  * Removed deprecated rubyforge gemspec property. Contributed by @olleolleolle.
  * Adds an option for specifying the attributes on the sticky session cookie:
-	- Apache:     PassengerStickySessionsCookieAttributes     "SameSite=Lax; Secure;"
-	- Nginx:      passenger_sticky_sessions_cookie_attributes "SameSite=Lax; Secure;"
-	- Standalone: --sticky-sessions-cookie-attributes         "SameSite=Lax; Secure;"
+    - Apache:     PassengerStickySessionsCookieAttributes     "SameSite=Lax; Secure;"
+    - Nginx:      passenger_sticky_sessions_cookie_attributes "SameSite=Lax; Secure;"
+    - Standalone: --sticky-sessions-cookie-attributes         "SameSite=Lax; Secure;"
  * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
 
     - ccache 3.7.9 (was 3.7.3)
@@ -604,7 +610,7 @@ Release 6.0.1
 Release 6.0.0
 -------------
 
- * Introduces support for *all* programming languages. Yes that's right... Java, Elixir, Go — Passenger now supports them all! This effort is called "generic language support".
+ * Introduces support for *all* programming languages. Yes that's right... Java, Elixir, Go - Passenger now supports them all! This effort is called "generic language support".
  * Bumps the preferred Nginx version to 1.15.7.
  * Introduces anonymous usage telemetry, which helps us improve Passenger. Please read the docs on what data is collected and how to disable this.
  * [Nginx] Introduces a new option "passenger_request_buffering on|off", to allow disabling request body buffering. This is only supported in Nginx >= 1.15.3. Closes GH-2121.
@@ -956,7 +962,7 @@ Release 5.0.29
  * [Nginx] The preferred Nginx version is now 1.10.1 (previously 1.10.0).
  * [Nginx] The preferred PCRE version is now 8.39 (previously 8.34).
  * [Standalone] Passenger Standalone now supports /dev/stdout and /dev/stderr as log file path (via `--log-file` or Passengerfile.json). This is especially useful in Docker containers. In previous versions logging to those paths did not work, resulting in nothing getting logged at all.
- * Adds Ubuntu 16.04 "Xenial" packages, deprecates Ubuntu 15.10 “Wily” packages (in accordance with LTS support policy).
+ * Adds Ubuntu 16.04 "Xenial" packages, deprecates Ubuntu 15.10 "Wily" packages (in accordance with LTS support policy).
 
 
 Release 5.0.28
