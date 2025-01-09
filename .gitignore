@@ -20,6 +20,7 @@ autom4te.cache
 /config.rb
 /buildout
 /build/cache
+/src/nginx_module/compile_commands.json
 /src/helper-scripts/download_binaries/Makefile
 /test/.gdbinit
 /test/test.log
