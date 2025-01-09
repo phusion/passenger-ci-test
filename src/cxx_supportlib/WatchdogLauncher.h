@@ -28,6 +28,7 @@
 
 
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include "JsonTools/CBindings.h"
 
@@ -72,9 +73,6 @@ void        psg_watchdog_launcher_free(PsgWatchdogLauncher *launcher);
 #include <oxt/backtrace.hpp>
 #include <string>
 #include <vector>
-#include <set>
-
-#include <signal.h>
 
 #include <jsoncpp/json.h>
 
