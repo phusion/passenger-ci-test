@@ -1,0 +1,5 @@
+CompileFlags:
+  Add:
+    - -xc-header
+    - -DINTELLISENSE
+    - -ferror-limit=0
