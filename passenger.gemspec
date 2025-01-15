@@ -23,9 +23,13 @@ Gem::Specification.new do |s|
     "mailing_list_uri"  => "https://www.phusionpassenger.com/contact",
     "wiki_uri"          => "https://github.com/phusion/passenger/wiki"
   }
+
+  # Limit dependencies only to those available through OS package repositories.
+  # See doc/DesignAspects/LimitedGemDependencies.md
   s.add_dependency 'rake', '>= 12.3.3'
   s.add_dependency 'rack', '>= 1.6.13'
   s.add_dependency 'rackup', '>= 2.0.0'
+
   s.files = Dir[*PhusionPassenger::Packaging::GLOB] -
     Dir[*PhusionPassenger::Packaging::EXCLUDE_GLOB]
   s.executables = PhusionPassenger::Packaging::USER_EXECUTABLES +
