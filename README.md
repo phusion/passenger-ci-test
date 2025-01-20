@@ -57,4 +57,4 @@ Ruby users can also build a gem from the Git repository and install the gem.
 
 ## Legal
 
-"Passenger" and "Phusion Passenger" are registered trademarks of Asynchronous Holding B.V.
+"Passenger" and "Phusion Passenger" are registered trademarks of Asynchronous B.V.

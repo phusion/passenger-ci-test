@@ -1,9 +1,9 @@
 /*
  *  Phusion Passenger - https://www.phusionpassenger.com/
- *  Copyright (c) 2018-2025 Asynchronous Holding B.V.
+ *  Copyright (c) 2018-2025 Asynchronous B.V.
  *
  *  "Passenger", "Phusion Passenger" and "Union Station" are registered
- *  trademarks of Asynchronous Holding B.V.
+ *  trademarks of Asynchronous B.V.
  *
  *  See LICENSE file for license information.
  */

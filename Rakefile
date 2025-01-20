@@ -1,8 +1,8 @@
 #  Phusion Passenger - https://www.phusionpassenger.com/
-#  Copyright (c) 2008-2025 Asynchronous Holding B.V.
+#  Copyright (c) 2008-2025 Asynchronous B.V.
 #
 #  "Passenger", "Phusion Passenger" and "Union Station" are registered
-#  trademarks of Asynchronous Holding B.V.
+#  trademarks of Asynchronous B.V.
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by

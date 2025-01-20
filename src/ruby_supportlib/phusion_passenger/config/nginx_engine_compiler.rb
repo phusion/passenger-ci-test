@@ -1,10 +1,10 @@
 #  encoding: utf-8
 #
 #  Phusion Passenger - https://www.phusionpassenger.com/
-#  Copyright (c) 2010-2025 Asynchronous Holding B.V.
+#  Copyright (c) 2010-2025 Asynchronous B.V.
 #
 #  "Passenger", "Phusion Passenger" and "Union Station" are registered
-#  trademarks of Asynchronous Holding B.V.
+#  trademarks of Asynchronous B.V.
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
