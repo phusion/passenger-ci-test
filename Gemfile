@@ -14,11 +14,5 @@ group :development do
   gem 'rspec', '~> 3.12.0'
   gem 'rspec-collection_matchers'
   gem 'webrick', '~> 1.8.1'
-end
-
-if ENV['USER'] == 'camdennarzt'
-  group :development do
-    gem 'solargraph'
-    gem 'gpgme'
-  end
+  gem 'gpgme' if ENV['USER'] == 'camdennarzt'
 end
