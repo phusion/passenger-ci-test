@@ -149,8 +149,9 @@ namespace tut {
 		set_test_name("It sets the environment variables specified in the config");
 
 		TempDirCopy dir("stub/wsgi", "tmp.wsgi");
+		string startCommand = "echo 'import os, json; print(json.dumps(dict(os.environ)))' | " + findPythonCommand() + " > env.json";
 		config.environmentVariables.insert("MY_VAR", "value");
-		config.startCommand = "echo 'import os, json; print(json.dumps(dict(os.environ)))' | python > env.json";
+		config.startCommand = startCommand.c_str();
 		init(SPAWN_DIRECTLY);
 		ensure("SpawnEnvSetupper succeeds", execute("--before"));
 
