@@ -31,7 +31,7 @@ jobs:
           - name: amd64
             runner: ubuntu-24.04
           - name: arm64
-            runner: passenger-ubuntu-24.04-arm64-4cpu
+            runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.arch.runner }}
     env:
       WORKSPACE: ${{ github.workspace }}

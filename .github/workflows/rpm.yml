@@ -33,7 +33,7 @@ jobs:
             runner: ubuntu-24.04
           - rpm_arch: aarch64
             docker_arch: arm64
-            runner: passenger-ubuntu-24.04-arm64-4cpu
+            runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.arch.runner }}
     steps:
       - uses: actions/checkout@v4
