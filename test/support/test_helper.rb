@@ -122,7 +122,7 @@ module TestHelper
         if !File.exist?("#{@full_app_root}/Gemfile")
           FileUtils.cp("#{build_system_dir}/Gemfile", @full_app_root)
           FileUtils.cp("#{build_system_dir}/Gemfile.lock", @full_app_root)
-          FileUtils.cp("#{build_system_dir}/passenger.gemspec", @full_app_root)
+          FileUtils.cp("#{build_system_dir}/#{PhusionPassenger::PACKAGE_NAME}.gemspec", @full_app_root)
           FileUtils.mkdir("#{@full_app_root}/src/")
           FileUtils.cp_r("#{build_system_dir}/src/ruby_supportlib", "#{@full_app_root}/src/")
           if File.exist?("#{build_system_dir}/.bundle")
