@@ -85,7 +85,6 @@ jobs:
           BLOB_NAME: "binaries/debian-cache-${{ matrix.distro }}-${{ matrix.arch.name }}.tar.zstd"
           CACHE_PATH: packaging/debian/cache
           SUDO: true
-        if: '!cancelled()'
 
       - uses: actions/upload-artifact@v4
         with:
