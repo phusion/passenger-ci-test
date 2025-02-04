@@ -28,7 +28,6 @@
 
 #include <string>
 #include <vector>
-#include <utility>
 #include <boost/shared_array.hpp>
 #include <WrapperRegistry/Registry.h>
 #include <DataStructures/HashedStaticString.h>
@@ -79,7 +78,7 @@ private:
 	template<typename OptionsClass, typename StaticStringClass>
 	static vector<StaticStringClass *> getStringFields(OptionsClass &options) {
 		vector<StaticStringClass *> result;
-		result.reserve(20);
+		result.reserve(30);
 
 		result.push_back(&options.appRoot);
 		result.push_back(&options.appGroupName);

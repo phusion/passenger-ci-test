@@ -27,8 +27,6 @@
 #define _PASSENGER_APPLICATION_POOL2_GROUP_H_
 
 #include <string>
-#include <map>
-#include <queue>
 #include <deque>
 #include <boost/thread.hpp>
 #include <boost/bind/bind.hpp>
@@ -202,7 +200,6 @@ public:
 	Callback shutdownCallback;
 	GroupPtr selfPointer;
 
-
 	/****** Initialization and shutdown ******/
 
 	static ApiKey generateApiKey(const Pool *pool);
@@ -233,9 +230,13 @@ public:
 	/****** Process list management ******/
 
 	Process *findProcessWithStickySessionId(unsigned int id) const;
+	Process *findProcessWithStickySessionIdOrLowestBusyness(unsigned int id) const;
+	Process *findProcessWithLowestBusyness(const ProcessList &processes) const;
+	Process *findEnabledProcessWithLowestBusyness() const;
 	Process *findBestProcessPreferringStickySessionId(unsigned int id) const;
 	Process *findBestProcess(const ProcessList &processes) const;
 	Process *findBestEnabledProcess() const;
+	bool useNewRouting() const;
 
 	void addProcessToList(const ProcessPtr &process, ProcessList &destination);
 	void removeProcessFromList(const ProcessPtr &process, ProcessList &source);
