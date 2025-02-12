@@ -1,4 +1,9 @@
-Release 6.0.25 (Not yet released)
+Release 6.0.26 (Not yet released)
+-------------
+ * 
+
+
+Release 6.0.25
 -------------
  * Fixes compilation with clang 19 (latest Fedora update) by dropping a buggy stddev function from the moving average header. Closes GH-2580.
  * [Standalone] Adds a config option to specify the stop timeout for Passenger: `--stop-timeout 120` or `PASSENGER_STOP_TIMEOUT=120`.
