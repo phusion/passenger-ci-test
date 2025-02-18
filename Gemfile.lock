@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    passenger (6.0.25)
+    passenger (6.0.26)
       rack (>= 1.6.13)
       rackup (>= 2.0.0)
       rake (>= 12.3.3)
