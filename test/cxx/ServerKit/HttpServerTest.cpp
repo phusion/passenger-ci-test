@@ -806,6 +806,32 @@ namespace tut {
 			"hello /");
 	}
 
+	TEST_METHOD(19) {
+		set_test_name("It responds with correct error if http method is not recognized");
+
+		// send invalid request
+		connectToServer();
+		sendRequest("BAD_METHOD / HTTP/1.1\r\n"
+					"Connection: close\r\n" 
+					"Host: foo\r\n\r\n");
+		string response = readAll(fd, 1024).first;
+
+		ensure("Response starts with error",
+			   startsWith(response,
+						  "HTTP/1.0 400 Bad Request\r\n"
+						  "Status: 400 Bad Request\r\n"
+						  "Content-Type: text/html; charset=UTF-8\r\n"));
+
+		ensure("Response ends with error",
+			   endsWith(response,
+						"Connection: close\r\n"
+						"Content-Length: 19\r\n"
+						"cache-control: no-cache, no-store, must-revalidate\r\n"
+						"\r\n"
+						"invalid HTTP method"));
+		ensure_equals("Response size is correct", response.size(), 242u);
+	}
+
 	/***** Fixed body handling *****/
 
 	TEST_METHOD(20) {
@@ -1476,7 +1502,6 @@ namespace tut {
 		string response = readAll(fd, 1024).first;
 		ensure("(1)", containsSubstring(response, "HTTP/1.1 400 Bad Request\r\n"));
 	}
-
 
 	/***** Secure headers handling *****/
 

@@ -1,6 +1,6 @@
 Release 6.0.26 (Not yet released)
 -------------
- * 
+ * [CVE-2025-26803] The http parser (from Passenger 6.0.21-6.0.25) was susceptible to a denial of service attack when parsing a request with an invalid HTTP method.
 
 
 Release 6.0.25

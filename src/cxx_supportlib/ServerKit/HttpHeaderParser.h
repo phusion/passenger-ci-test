@@ -119,31 +119,26 @@ private:
 	}
 
 	static size_t http_parser_execute_and_handle_pause(llhttp_t *parser,
-		const char *data, size_t len, bool &paused)
+		const char *data, size_t len)
 	{
 		llhttp_errno_t rc = llhttp_get_errno(parser);
 		switch (rc) {
 		case HPE_PAUSED_UPGRADE:
 			llhttp_resume_after_upgrade(parser);
+			rc = llhttp_get_errno(parser);
 			goto happy_path;
 		case HPE_PAUSED:
 			llhttp_resume(parser);
+			rc = llhttp_get_errno(parser);
 			goto happy_path;
 		case HPE_OK:
+			rc = llhttp_execute(parser, data, len);
 		happy_path:
-			switch (llhttp_execute(parser, data, len)) {
-			case HPE_PAUSED_H2_UPGRADE:
-			case HPE_PAUSED_UPGRADE:
-			case HPE_PAUSED:
-				paused = true;
-				return (llhttp_get_error_pos(parser) - data);
-			case HPE_OK:
+			if (rc == HPE_OK) {
 				return len;
-			default:
-				goto error_path;
-			}
+            }
+			// deliberate fall through
         default:
-		error_path:
 			return (llhttp_get_error_pos(parser) - data);
 		}
 	}
@@ -488,20 +483,22 @@ public:
 		TRACE_POINT();
 		P_ASSERT_EQ(message->httpState, Message::PARSING_HEADERS);
 
-		size_t ret;
-		bool paused;
-
 		state->parser.data = this;
 		currentBuffer = &buffer;
-		ret = http_parser_execute_and_handle_pause(&state->parser,
-			buffer.start, buffer.size(), paused);
+		size_t ret = http_parser_execute_and_handle_pause(&state->parser,
+			buffer.start, buffer.size());
 		currentBuffer = NULL;
 
-		if (!llhttp_get_upgrade(&state->parser) && ret != buffer.size() && !paused || !paused && llhttp_get_errno(&state->parser) != HPE_OK) {
+		llhttp_errno_t llerrno = llhttp_get_errno(&state->parser);
+
+		bool paused = (llerrno == HPE_PAUSED_H2_UPGRADE || llerrno == HPE_PAUSED_UPGRADE || llerrno == HPE_PAUSED);
+
+		if ( (!llhttp_get_upgrade(&state->parser) && ret != buffer.size() && !paused) ||
+		 (llerrno != HPE_OK && !paused) ) {
 			UPDATE_TRACE_POINT();
 			message->httpState = Message::ERROR;
-			switch (llhttp_get_errno(&state->parser)) {
-			case HPE_CB_HEADER_FIELD_COMPLETE://?? does this match was HPE_CB_header_field in old one
+			switch (llerrno) {
+			case HPE_CB_HEADER_FIELD_COMPLETE:// does this match? was HPE_CB_header_field in old impl
 			case HPE_CB_HEADERS_COMPLETE:
 				switch (state->state) {
 				case HttpHeaderParserState::ERROR_SECURITY_PASSWORD_MISMATCH:
@@ -526,9 +523,10 @@ public:
 				break;
 			default:
 				default_error:
-				message->aux.parseError = HTTP_PARSER_ERRNO_BEGIN - llhttp_get_errno(&state->parser);
+				message->aux.parseError = HTTP_PARSER_ERRNO_BEGIN - llerrno;
 				break;
 			}
+			llhttp_finish(&state->parser);
 		} else if (messageHttpStateIndicatesCompletion(MessageType())) {
 			UPDATE_TRACE_POINT();
 			message->httpMajor = llhttp_get_http_major(&state->parser);
