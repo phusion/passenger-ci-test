@@ -1382,10 +1382,6 @@ public:
 		config["turbocaching"] = serverConfig.turbocaching;
 		config["old_routing"] = serverConfig.oldRouting;
 		config["prestart_urls"] = strsetToJson(serverConfig.prestartURLs);
-		config["admin_panel_url"] = nonEmptyString(serverConfig.adminPanelUrl);
-		config["admin_panel_auth_type"] = nonEmptyString(serverConfig.adminPanelAuthType);
-		config["admin_panel_username"] = nonEmptyString(serverConfig.adminPanelUsername);
-		config["admin_panel_password"] = nonEmptyString(serverConfig.adminPanelPassword);
 		config["disable_log_prefix"] = serverConfig.disableLogPrefix;
 
 		if (!serverConfig.logFile.empty()) {
