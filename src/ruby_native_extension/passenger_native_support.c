@@ -577,6 +577,22 @@ fs_watcher_free(void *obj) {
 	free(watcher);
 }
 
+static size_t
+fs_watcher_size(const void *obj) {
+	return sizeof(FSWatcher);
+}
+
+static const rb_data_type_t fs_watcher_type = {
+	.wrap_struct_name = "fs_watcher",
+	.function = {
+		.dmark = NULL,
+		.dfree = fs_watcher_free,
+		.dsize = fs_watcher_size,
+	},
+	.data = NULL,
+	.flags = 0, // we unlock gvl so probably can't use RUBY_TYPED_FREE_IMMEDIATELY
+};
+
 static VALUE
 fs_watcher_init(VALUE arg) {
 	FSWatcher *watcher = (FSWatcher *) arg;
@@ -672,7 +688,7 @@ end:
 		watcher->fds = NULL;
 		watcher->fds_len = 0;
 	}
-	return Data_Wrap_Struct(watcher->klass, NULL, fs_watcher_free, watcher);
+	return TypedData_Wrap_Struct(watcher->klass, &fs_watcher_type, watcher);
 }
 
 static VALUE
@@ -789,7 +805,7 @@ fs_watcher_wait_for_change(VALUE self) {
 	int e, interrupted = 0;
 	FSWatcherReadByteData read_data;
 
-	Data_Get_Struct(self, FSWatcher, watcher);
+	TypedData_Get_Struct(self, FSWatcher, &fs_watcher_type, watcher);
 
 	if (watcher->preparation_error) {
 		return Qfalse;
@@ -881,7 +897,7 @@ fs_watcher_wait_for_change(VALUE self) {
 static VALUE
 fs_watcher_close(VALUE self) {
 	FSWatcher *watcher;
-	Data_Get_Struct(self, FSWatcher, watcher);
+	TypedData_Get_Struct(self, FSWatcher, &fs_watcher_type, watcher);
 	fs_watcher_real_close(watcher);
 	return Qnil;
 }
