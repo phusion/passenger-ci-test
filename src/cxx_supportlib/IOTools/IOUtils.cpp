@@ -34,7 +34,6 @@
 #include <oxt/system_calls.hpp>
 #include <oxt/backtrace.hpp>
 #include <oxt/macros.hpp>
-#include <algorithm>
 #include <string>
 #include <vector>
 #include <sys/socket.h>
@@ -42,10 +41,9 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <limits.h> // Also for __GLIBC__ macro.
+#include <limits.h> // IWYU pragma: keep; for __GLIBC__ macro
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -250,44 +248,6 @@ callAccept4(int sock, struct sockaddr *addr, socklen_t *addr_len, int options) {
 		errno = ENOSYS;
 		return -1;
 	#endif
-}
-
-vector<string>
-resolveHostname(const string &hostname, unsigned int port, bool shuffle) {
-	string portString = toString(port);
-	struct addrinfo hints, *res, *current;
-	vector<string> result;
-	int ret;
-
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family   = PF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	ret = getaddrinfo(hostname.c_str(), (port == 0) ? NULL : portString.c_str(),
-		&hints, &res);
-	if (ret != 0) {
-		throw IOException(string("Error resolving ") + hostname + ": "
-			+ gai_strerror(ret));
-	}
-
-	for (current = res; current != NULL; current = current->ai_next) {
-		char host[NI_MAXHOST];
-
-		ret = getnameinfo(current->ai_addr, current->ai_addrlen,
-			host, sizeof(host) - 1,
-			NULL, 0,
-			NI_NUMERICHOST);
-		if (ret == 0) {
-			result.push_back(host);
-		} else {
-			P_WARN("Cannot get name info for one of the resolved "
-				"IP addresses in host name " << hostname);
-		}
-	}
-	freeaddrinfo(res);
-	if (shuffle) {
-		random_shuffle(result.begin(), result.end());
-	}
-	return result;
 }
 
 int
