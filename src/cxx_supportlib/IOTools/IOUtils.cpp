@@ -238,12 +238,6 @@ callAccept4(int sock, struct sockaddr *addr, socklen_t *addr_len, int options) {
 			ret = ::accept4(sock, addr, addr_len, options);
 		} while (ret == -1 && errno == EINTR);
 		return ret;
-	#elif defined(__linux__) && defined(__x86_64__)
-		int ret;
-		do {
-			ret = syscall(288, sock, addr, addr_len, options);
-		} while (ret == -1 && errno == EINTR);
-		return ret;
 	#else
 		errno = ENOSYS;
 		return -1;
