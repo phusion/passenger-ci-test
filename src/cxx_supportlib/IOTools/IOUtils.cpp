@@ -486,88 +486,6 @@ connectToUnixServer(const StaticString &filename, const char *file,
 	abort();   // Never reached.
 }
 
-NonBlockingConnectState::NonBlockingConnectState(ServerAddressType _type)
-	: type(_type)
-{
-	// When we're ready for C++14:
-	// switch (_type) {
-	// case SAT_TCP:
-	// 	new (storage) NTCP_State();
-	// case SAT_UNIX:
-	// 	new (storage) NUnix_State();
-	// default:
-	// 	throw ArgumentException("Unknown address type");
-	// }
-}
-
-NonBlockingConnectState::~NonBlockingConnectState() {
-	// When we're ready for C++14:
-	// switch (type) {
-	// case SAT_TCP:
-	// 	asNTCP_State().~NTCP_State();
-	// case SAT_UNIX:
-	// 	asNUnix_State().~NUnix_State();
-	// default:
-	// 	P_BUG("Unknown address type");
-	// }
-}
-
-NUnix_State &
-NonBlockingConnectState::asNUnix_State() {
-	// When we're ready for C++14:
-	// if (type == SAT_UNIX) {
-	// 	return *reinterpret_cast<NUnix_State *>(storage);
-	// } else {
-	// 	P_BUG("Address type is not TCP");
-	// }
-	return nUnixState;
-}
-
-NTCP_State &
-NonBlockingConnectState::asNTCP_State() {
-	// When we're ready for C++14:
-	// if (type == SAT_TCP) {
-	// 	return *reinterpret_cast<NTCP_State *>(storage);
-	// } else {
-	// 	P_BUG("Address type is not TCP");
-	// }
-	return nTcpState;
-}
-
-void
-setupNonBlockingSocket(NonBlockingConnectState & restrict_ref state,
-	const StaticString & restrict_ref address, const char *file,
-	unsigned int line)
-{
-	TRACE_POINT();
-	switch (getSocketAddressType(address)) {
-	case SAT_UNIX:
-		return setupNonBlockingUnixSocket(state.asNUnix_State(), parseUnixSocketAddress(address), file, line);
-	case SAT_TCP: {
-		string host;
-		unsigned short port;
-
-		parseTcpSocketAddress(address, host, port);
-		return setupNonBlockingTcpSocket(state.asNTCP_State(), host, port, file, line);
-	}
-	default:
-		throw ArgumentException(string("Unknown address type for '") + address + "'");
-	}
-}
-
-bool
-connectToServer(NonBlockingConnectState &state) {
-	TRACE_POINT();
-	switch (state.type) {
-	case SAT_UNIX:
-		return connectToUnixServer(state.asNUnix_State());
-	case SAT_TCP:
-		return connectToTcpServer(state.asNTCP_State());
-	default:
-		P_BUG("Unknown address type");
-	}
-}
-
 void
 setupNonBlockingUnixSocket(NUnix_State &state, const StaticString &filename,
 	const char *file, unsigned int line)
@@ -732,15 +650,13 @@ connectToTcpServer(NTCP_State &state) {
 	}
 }
 
-void
-setupNonBlockingSocket(NConnect_State &state, const StaticString &address,
-	const char *file, unsigned int line)
+NConnect_State::NConnect_State(const StaticString &address, const char *file, unsigned int line)
 {
 	TRACE_POINT();
-	state.type = getSocketAddressType(address);
-	switch (state.type) {
+	type = getSocketAddressType(address);
+	switch (type) {
 	case SAT_UNIX:
-		setupNonBlockingUnixSocket(state.s_unix, parseUnixSocketAddress(address),
+		setupNonBlockingUnixSocket(s_unix, parseUnixSocketAddress(address),
 			file, line);
 		break;
 	case SAT_TCP: {
@@ -748,7 +664,7 @@ setupNonBlockingSocket(NConnect_State &state, const StaticString &address,
 		unsigned short port;
 
 		parseTcpSocketAddress(address, host, port);
-		setupNonBlockingTcpSocket(state.s_tcp, host, port, file, line);
+		setupNonBlockingTcpSocket(s_tcp, host, port, file, line);
 		break;
 	}
 	default:
@@ -757,15 +673,49 @@ setupNonBlockingSocket(NConnect_State &state, const StaticString &address,
 }
 
 bool
-connectToServer(NConnect_State &state) {
-	switch (state.type) {
+NConnect_State::connectToServer() {
+	switch (type) {
 	case SAT_UNIX:
-		return connectToUnixServer(state.s_unix);
+		return connectToUnixServer(s_unix);
 	case SAT_TCP:
-		return connectToTcpServer(state.s_tcp);
+		return connectToTcpServer(s_tcp);
 	default:
 		throw RuntimeException("Unknown address type");
 	}
+}
+
+int
+NConnect_State::getFd() {
+	switch (type) {
+	case SAT_UNIX:
+		return s_unix.fd;
+	case SAT_TCP:
+		return s_tcp.fd;
+	default:
+		throw RuntimeException("Unknown address type");
+	}
+}
+
+NUnix_State &
+NConnect_State::asNUnix_State() {
+	// When we're ready for C++14:
+	// if (type == SAT_UNIX) {
+	// 	return *reinterpret_cast<NUnix_State *>(storage);
+	// } else {
+	// 	P_BUG("Address type is not TCP");
+	// }
+	return s_unix;
+}
+
+NTCP_State &
+NConnect_State::asNTCP_State() {
+	// When we're ready for C++14:
+	// if (type == SAT_TCP) {
+	// 	return *reinterpret_cast<NTCP_State *>(storage);
+	// } else {
+	// 	P_BUG("Address type is not TCP");
+	// }
+	return s_tcp;
 }
 
 bool
