@@ -242,11 +242,81 @@ int connectToUnixServer(const StaticString &filename, const char *file,
 int connectToTcpServer(const StaticString &hostname, unsigned int port,
 	const char *file, unsigned int line);
 
+
 /** State structure for non-blocking connectToUnixServer(). */
 struct NUnix_State {
 	FileDescriptor fd;
 	string filename;
 };
+
+/** State structure for non-blocking connectToTcpServer(). */
+struct NTCP_State {
+	FileDescriptor fd;
+	struct addrinfo hints, *res;
+	string hostname;
+	int port;
+
+	NTCP_State() {
+		memset(&hints, 0, sizeof(hints));
+		res = NULL;
+		port = 0;
+	}
+
+	~NTCP_State() {
+		if (res != NULL) {
+			freeaddrinfo(res);
+		}
+	}
+};
+
+/** State structure for non-blocking connectToServer(). */
+struct NonBlockingConnectState {
+private:
+	// When we're ready for C++14:
+	// alignas(std::max(alignof(NUnix_State), alignof(NTCP_State)))
+	// char storage[std::max(sizeof(NUnix_State), sizeof(NTCP_State))];
+	NUnix_State nUnixState;
+	NTCP_State nTcpState;
+
+public:
+	const ServerAddressType type;
+
+	NonBlockingConnectState(ServerAddressType type);
+	~NonBlockingConnectState();
+
+	NUnix_State &asNUnix_State();
+	NTCP_State &asNTCP_State();
+};
+
+/**
+ * Setup a socket for non-blocking connecting. When done,
+ * the file descriptor can be accessed through \c state.fd.
+ *
+ * @param state A state structure.
+ * @param address An address as accepted by getSocketAddressType().
+ * @param file The name of the source file that called this function,
+ *             for file descriptor logging purposes.
+ * @param line The line in the source file that called this function.
+ * @throws SystemException Something went wrong.
+ * @throws boost::thread_interrupted A system call has been interrupted.
+ * @ingroup Support
+ */
+void setupNonBlockingSocket(NonBlockingConnectState & restrict_ref state,
+	const StaticString & restrict_ref address, const char *file,
+	unsigned int line);
+
+/**
+ * Connect a socket in non-blocking mode.
+ *
+ * @param state A state structure.
+ * @return True if the socket was successfully connected, false if the socket isn't
+ *         ready yet, in which case the caller should select() on the socket until it's writable.
+ * @throws RuntimeException Something went wrong.
+ * @throws SystemException Something went wrong while connecting to the Unix server.
+ * @throws boost::thread_interrupted A system call has been interrupted.
+ * @ingroup Support
+ */
+bool connectToServer(NonBlockingConnectState &state);
 
 /**
  * Setup a Unix domain socket for non-blocking connecting. When done,
@@ -277,26 +347,6 @@ void setupNonBlockingUnixSocket(NUnix_State & restrict_ref state,
  * @ingroup Support
  */
 bool connectToUnixServer(NUnix_State &state);
-
-/** State structure for non-blocking connectToTcpServer(). */
-struct NTCP_State {
-	FileDescriptor fd;
-	struct addrinfo hints, *res;
-	string hostname;
-	int port;
-
-	NTCP_State() {
-		memset(&hints, 0, sizeof(hints));
-		res = NULL;
-		port = 0;
-	}
-
-	~NTCP_State() {
-		if (res != NULL) {
-			freeaddrinfo(res);
-		}
-	}
-};
 
 /**
  * Setup a TCP socket for non-blocking connecting. When done,

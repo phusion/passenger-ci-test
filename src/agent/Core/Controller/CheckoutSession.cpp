@@ -180,6 +180,7 @@ Controller::initiateSession(Client *client, Request *req) {
 	try {
 		req->session->initiate(false);
 	} catch (const SystemException &e2) {
+		UPDATE_TRACE_POINT();
 		if (req->sessionCheckoutTry < MAX_SESSION_CHECKOUT_TRY) {
 			SKC_DEBUG(client, "Error checking out session (" << e2.what() <<
 				"); retrying (attempt " << req->sessionCheckoutTry << ")");
@@ -193,8 +194,6 @@ Controller::initiateSession(Client *client, Request *req) {
 		}
 		return;
 	}
-
-	UPDATE_TRACE_POINT();
 
 	UPDATE_TRACE_POINT();
 	SKC_DEBUG(client, "Session initiated: fd=" << req->session->fd());
