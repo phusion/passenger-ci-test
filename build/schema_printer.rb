@@ -53,7 +53,6 @@ SCHEMA_PRINTER_OBJECTS.each_pair do |object, source|
         agent_cflags,
         libev_cflags,
         libuv_cflags,
-        websocketpp_cflags,
         PlatformInfo.curl_flags,
         PlatformInfo.openssl_extra_cflags,
         PlatformInfo.zlib_flags
@@ -83,7 +82,6 @@ file(SCHEMA_PRINTER_TARGET => dependencies) do
     :flags => [
       libev_libs,
       libuv_libs,
-      websocketpp_libs,
       PlatformInfo.curl_libs,
       PlatformInfo.zlib_libs,
       PlatformInfo.crypto_libs,

@@ -6,7 +6,6 @@ SEARCH_PATHS = [
   "src/agent",
   "src/cxx_supportlib",
   "src/cxx_supportlib/vendor-copy",
-  "src/cxx_supportlib/vendor-modified/websocketpp",
   "src/cxx_supportlib/vendor-modified",
   "test/cxx"
 ]
