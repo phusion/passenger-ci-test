@@ -43,6 +43,8 @@
 
 #include <Constants.h>
 #include <LoggingKit/LoggingKit.h>
+#include <ServerKit/Context.h>
+#include <ServerKit/Errors.h>
 #include <Utils.h>
 #include <IOTools/IOUtils.h>
 

@@ -27,7 +27,6 @@
 #define _PASSENGER_FAST_STRING_STREAM_H_
 
 #include <ostream>
-#include <sstream>
 #include <string>
 #include <new>
 #include <cstdlib>
@@ -158,6 +157,12 @@ public:
 	}
 };
 
+#ifndef _PASSENGER_FAST_STRING_STREAM_FORWARD_DECLARED_
+	#define _PASSENGER_FAST_STRING_STREAM_FORWARD_DECLARED_
+	template<size_t staticCapacity = 1024>
+	class FastStringStream;
+#endif
+
 /**
  * An std::ostream-compatible output stream. It's similar to std::stringstream,
  * with a few optimizations:
@@ -169,12 +174,7 @@ public:
  *
  * This class is implemented using FastStdStringBuf.
  */
-#ifndef _PASSENGER_FAST_STRING_STREAM_FORWARD_DECLARED_
-	#define _PASSENGER_FAST_STRING_STREAM_FORWARD_DECLARED_
-	template<size_t staticCapacity = 1024>
-#else
-	template<size_t staticCapacity>
-#endif
+template<size_t staticCapacity>
 class FastStringStream: public FastStdStringBuf<staticCapacity>, public ostream {
 public:
 	FastStringStream(unsigned int initialCapacity = 0)
