@@ -23,9 +23,14 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-#include "DataStructures/LString.h"
+#include <DataStructures/LString.h>
 #include <Core/Controller.h>
 #include <Core/SpawningKit/ErrorRenderer.h>
+
+#if defined(__GLIBCXX__) || defined(__APPLE__)
+	#include <cxxabi.h>
+	#define CXX_ABI_API_AVAILABLE
+#endif
 
 /*************************************************************************
  *

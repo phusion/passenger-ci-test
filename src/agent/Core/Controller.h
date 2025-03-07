@@ -44,22 +44,13 @@
 #include <boost/cstdint.hpp>
 #include <oxt/macros.hpp>
 #include <ev++.h>
-#include <ostream>
-
-#if defined(__GLIBCXX__) || defined(__APPLE__)
-	#include <cxxabi.h>
-	#define CXX_ABI_API_AVAILABLE
-#endif
 
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <utility>
-#include <typeinfo>
 #include <cstdio>
 #include <cstdlib>
 #include <cstddef>
-#include <cassert>
-#include <cctype>
 
 #include <LoggingKit/LoggingKit.h>
 #include <IOTools/MessageSerialization.h>
