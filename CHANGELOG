@@ -1,5 +1,8 @@
 Release 6.0.27 (Not yet released)
  * Upgrades Boost from 1.86 → 1.87.
+ * Remove Passenger admin panel (Fuse).
+ * [Ruby] Fix compatibility with Rack 2 While maintaining compatibility with Rack 3. Closes GH-2595.
+ * [Ruby] Use non-deprecated functions in native extensions.
  * 
 
 
