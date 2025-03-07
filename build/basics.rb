@@ -142,6 +142,7 @@ EXTRA_PRE_CXX_LDFLAGS = compiler_flag_option('EXTRA_PRE_LDFLAGS') + " " +
 let(:extra_c_ldflags) do
   result = []
   result << PlatformInfo.address_sanitizer_flags if USE_ASAN
+  result << PlatformInfo.undefined_behavior_sanitizer_flags if USE_UBSAN
   result << compiler_flag_option('EXTRA_LDFLAGS')
   result << compiler_flag_option('EXTRA_C_LDFLAGS')
   result.compact!
@@ -150,6 +151,7 @@ end
 let(:extra_cxx_ldflags) do
   result = []
   result << PlatformInfo.address_sanitizer_flags if USE_ASAN
+  result << PlatformInfo.undefined_behavior_sanitizer_flags if USE_UBSAN
   result << compiler_flag_option('EXTRA_LDFLAGS')
   result << compiler_flag_option('EXTRA_CXX_LDFLAGS')
   result.compact!
