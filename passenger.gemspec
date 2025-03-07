@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   # See doc/DesignAspects/LimitedGemDependencies.md
   s.add_dependency 'rake', '>= 12.3.3'
   s.add_dependency 'rack', '>= 1.6.13'
-  s.add_dependency 'rackup', '>= 2.0.0'
+  s.add_dependency 'rackup', '>= 1.0.1'
 
   s.files = Dir[*PhusionPassenger::Packaging::GLOB] -
     Dir[*PhusionPassenger::Packaging::EXCLUDE_GLOB]
