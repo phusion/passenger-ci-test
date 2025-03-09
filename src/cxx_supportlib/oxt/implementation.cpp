@@ -266,6 +266,41 @@ tracable_exception::tracable_exception(const no_backtrace &tag)
 	// Do nothing.
 }
 
+tracable_exception &
+tracable_exception::operator=(const tracable_exception &other) {
+	if (this != &other) {
+		// Clean up existing backtrace points
+		for (auto p: backtrace_copy) {
+			delete p;
+		}
+		backtrace_copy.clear();
+
+		// Copy backtrace points from other
+		backtrace_copy.reserve(other.backtrace_copy.size());
+		for (const auto p2: other.backtrace_copy) {
+			trace_point *p;
+			if (p2->m_hasDataFunc) {
+				p = new trace_point(
+					p2->function,
+					p2->source,
+					p2->line,
+					p2->u.dataFunc.func,
+					p2->u.dataFunc.userData,
+					true);
+			} else {
+				p = new trace_point(
+					p2->function,
+					p2->source,
+					p2->line,
+					p2->u.data,
+					trace_point::detached());
+			}
+			backtrace_copy.push_back(p);
+		}
+	}
+	return *this;
+}
+
 tracable_exception::~tracable_exception() throw() {
 	vector<trace_point *>::iterator it, end = backtrace_copy.end();
 	for (it = backtrace_copy.begin(); it != end; it++) {

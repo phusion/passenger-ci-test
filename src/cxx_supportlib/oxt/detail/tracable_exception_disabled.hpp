@@ -53,6 +53,10 @@ public:
 		// Do nothing.
 	}
 
+	tracable_exception &operator=(const tracable_exception &other) {
+		return *this; // Do nothing.
+	}
+
 	virtual std::string backtrace() const throw() {
 		return "     (backtrace support disabled during compile time)\n";
 	}

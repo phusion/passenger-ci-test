@@ -42,6 +42,7 @@ public:
 	tracable_exception();
 	tracable_exception(const tracable_exception &other);
 	tracable_exception(const no_backtrace &tag);
+	tracable_exception &operator=(const tracable_exception &other);
 	virtual ~tracable_exception() throw();
 	virtual std::string backtrace() const throw();
 	virtual const char *what() const throw();
