@@ -144,12 +144,6 @@ module PhusionPassenger
           # Avoids some compilaton warnings with Boost on Ubuntu 14.04.
           flags << "-Wno-unused-local-typedefs"
         end
-
-        if cxx_supports_wno_format_nonliteral_flag?
-          # SystemTools/UserDatabase.cpp uses snprintf() with a non-literal
-          # format string.
-          flags << '-Wno-format-nonliteral'
-        end
       else
         flags << debugging_cflags
       end
