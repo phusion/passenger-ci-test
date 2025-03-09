@@ -23,12 +23,9 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-#include <typeinfo>
-#include <algorithm>
 #include <utility>
 #include <cstdio>
 #include <sstream>
-#include <limits.h>
 #include <unistd.h>
 #include <boost/make_shared.hpp>
 #include <boost/ref.hpp>
