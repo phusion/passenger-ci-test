@@ -603,7 +603,7 @@ module PhusionPassenger
       # -ggdb instead.
       #
       # In any case we'll always want to use -ggdb for better GDB debugging.
-      if cc_is_gcc?
+      if cxx_is_gcc?
         result = '-ggdb'
       else
         result = '-g'
