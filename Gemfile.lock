@@ -3,7 +3,7 @@ PATH
   specs:
     passenger (6.0.27)
       rack (>= 1.6.13)
-      rackup (>= 2.0.0)
+      rackup (>= 1.0.1)
       rake (>= 12.3.3)
 
 GEM
