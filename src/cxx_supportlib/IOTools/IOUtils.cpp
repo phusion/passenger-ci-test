@@ -526,6 +526,7 @@ connectToUnixServer(NUnix_State &state) {
 			int e = errno;
 			string message = "Cannot connect to Unix socket '";
 			message.append(state.filename.data(), state.filename.size());
+			message.append("'");
 			throw SystemException(message, e);
 		}
 	} else {
