@@ -187,12 +187,12 @@ Controller::initiateSession(Client *client, Request *req) {
 	} catch (const SystemException &e2) {
 		UPDATE_TRACE_POINT();
 		if (req->sessionCheckoutTry < MAX_SESSION_CHECKOUT_TRY) {
-			SKC_DEBUG(client, "Error checking out session (" << e2.what() <<
-				"); retrying (attempt " << req->sessionCheckoutTry << ")");
+			SKC_DEBUG(client, "Error initiating session (" << e2.what() <<
+				"); retrying (attempt " << int(req->sessionCheckoutTry) << ")");
 			refRequest(req, __FILE__, __LINE__);
 			getContext()->libev->runLater(boost::bind(checkoutSessionLater, req));
 		} else {
-			string message = "could not initiate a session (";
+			string message = "error initiating a session (";
 			message.append(e2.what());
 			message.append(")");
 			disconnectWithError(&client, message);
