@@ -156,22 +156,22 @@ public:
 	}
 
 
-	virtual const ApiKey &getApiKey() const {
+	virtual const ApiKey &getApiKey() const override {
 		assert(!closed);
 		return processInfo->groupInfo->apiKey;
 	}
 
-	virtual pid_t getPid() const {
+	virtual pid_t getPid() const override {
 		assert(!closed);
 		return processInfo->pid;
 	}
 
-	virtual StaticString getGupid() const {
+	virtual StaticString getGupid() const override {
 		assert(!closed);
 		return StaticString(processInfo->gupid, processInfo->gupidSize);
 	}
 
-	virtual unsigned int getStickySessionId() const {
+	virtual unsigned int getStickySessionId() const override {
 		assert(!closed);
 		return processInfo->stickySessionId;
 	}
@@ -181,12 +181,12 @@ public:
 		return socket;
 	}
 
-	virtual StaticString getProtocol() const {
+	virtual StaticString getProtocol() const override {
 		return getSocket()->protocol;
 	}
 
 
-	virtual void initiate(bool blocking = true) {
+	virtual void initiate(bool blocking = true) override {
 		assert(!closed);
 		ScopeGuard g(boost::bind(&Session::callOnInitiateFailure, this));
 		Connection connection = socket->checkoutConnection();
@@ -205,7 +205,7 @@ public:
 		return connection.fd != -1;
 	}
 
-	virtual int fd() const {
+	virtual int fd() const override {
 		assert(!closed);
 		return connection.fd;
 	}
@@ -213,7 +213,7 @@ public:
 	/**
 	 * This Session object becomes fully unusable after closing.
 	 */
-	virtual void close(bool success, bool wantKeepAlive = false) {
+	virtual void close(bool success, bool wantKeepAlive = false) override {
 		if (OXT_LIKELY(initiated())) {
 			deinitiate(success, wantKeepAlive);
 		}
@@ -224,18 +224,18 @@ public:
 		socket = NULL;
 	}
 
-	virtual bool isClosed() const {
+	virtual bool isClosed() const override {
 		return closed;
 	}
 
-	virtual void requestOOBW();
+	virtual void requestOOBW() override;
 
 
-	virtual void ref() const {
+	virtual void ref() const override {
 		refcount.fetch_add(1, boost::memory_order_relaxed);
 	}
 
-	virtual void unref() const {
+	virtual void unref() const override {
 		if (refcount.fetch_sub(1, boost::memory_order_release) == 1) {
 			boost::atomic_thread_fence(boost::memory_order_acquire);
 			destroySelf();

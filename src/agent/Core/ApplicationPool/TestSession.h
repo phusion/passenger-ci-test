@@ -70,13 +70,13 @@ public:
 		  wantKeepAlive(false)
 		{ }
 
-	virtual void ref() const {
+	virtual void ref() const override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		assert(refcount > 0);
 		refcount++;
 	}
 
-	virtual void unref() const {
+	virtual void unref() const override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		assert(refcount > 0);
 		refcount--;
@@ -89,7 +89,7 @@ public:
 		}
 	}
 
-	virtual pid_t getPid() const {
+	virtual pid_t getPid() const override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		return pid;
 	}
@@ -99,7 +99,7 @@ public:
 		pid = p;
 	}
 
-	virtual StaticString getGupid() const {
+	virtual StaticString getGupid() const override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		return gupid;
 	}
@@ -109,7 +109,7 @@ public:
 		gupid = v;
 	}
 
-	virtual StaticString getProtocol() const {
+	virtual StaticString getProtocol() const override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		return protocol;
 	}
@@ -119,7 +119,7 @@ public:
 		protocol = v;
 	}
 
-	virtual unsigned int getStickySessionId() const {
+	virtual unsigned int getStickySessionId() const override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		return stickySessionId;
 	}
@@ -129,11 +129,11 @@ public:
 		stickySessionId = v;
 	}
 
-	virtual const ApiKey &getApiKey() const {
+	virtual const ApiKey &getApiKey() const override {
 		return apiKey;
 	}
 
-	virtual int fd() const {
+	virtual int fd() const override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		return connection.first;
 	}
@@ -148,7 +148,7 @@ public:
 		return peerBufferedIO;
 	}
 
-	virtual bool isClosed() const {
+	virtual bool isClosed() const override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		return closed;
 	}
@@ -163,7 +163,7 @@ public:
 		return wantKeepAlive;
 	}
 
-	virtual void initiate(bool blocking = true) {
+	virtual void initiate(bool blocking = true) override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		connection = createUnixSocketPair(__FILE__, __LINE__);
 		peerBufferedIO = BufferedIO(connection.second);
@@ -172,7 +172,7 @@ public:
 		}
 	}
 
-	virtual void close(bool _success, bool _wantKeepAlive = false) {
+	virtual void close(bool _success, bool _wantKeepAlive = false) override {
 		boost::lock_guard<boost::mutex> l(syncher);
 		closed = true;
 		success = _success;
