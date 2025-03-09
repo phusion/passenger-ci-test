@@ -1,5 +1,6 @@
 #include <TestSupport.h>
 #include <limits>
+#include <cassert>
 #include <Constants.h>
 #include <IOTools/IOUtils.h>
 #include <IOTools/BufferedIO.h>
@@ -19,6 +20,7 @@ namespace tut {
 			virtual void asyncGetFromApplicationPool(Request *req,
 				ApplicationPool2::GetCallback callback)
 			{
+				assert(sessionToReturn != nullptr);
 				callback(sessionToReturn, exceptionToReturn);
 				sessionToReturn.reset();
 			}
@@ -119,7 +121,7 @@ namespace tut {
 
 		void startLoop() {
 			if (!bg.isStarted()) {
-				bg.start();
+				bg.start("Core_ControllerTest Background Loop");
 			}
 		}
 
@@ -159,11 +161,9 @@ namespace tut {
 		}
 
 		void useTestSessionObject() {
-			bg.safe->runSync(boost::bind(&Core_ControllerTest::_setTestSessionObject, this));
-		}
-
-		void _setTestSessionObject() {
-			controller->sessionToReturn.reset(&testSession, false);
+			bg.safe->runSync([&] {
+				controller->sessionToReturn.reset(&testSession, false);
+			});
 		}
 
 		MyController::State getServerState() {
