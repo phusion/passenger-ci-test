@@ -8643,10 +8643,6 @@ CXX_DEPENDENCY_MAP =
  "src/cxx_supportlib/FileTools/FileManip.h"=>
   ["src/cxx_supportlib/StaticString.h",
    "src/cxx_supportlib/oxt/macros.hpp"],
- "src/cxx_supportlib/FileTools/LargeFiles.cpp"=>
-  ["src/cxx_supportlib/FileTools/LargeFiles.h"],
- "src/cxx_supportlib/FileTools/LargeFiles.h"=>
-  [],
  "src/cxx_supportlib/FileTools/PathManip.cpp"=>
   ["src/cxx_supportlib/Exceptions.h",
    "src/cxx_supportlib/FileTools/PathManip.h",
