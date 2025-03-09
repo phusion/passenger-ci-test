@@ -216,36 +216,6 @@ module PhusionPassenger
       defined?(File::LOCK_EX) && os_name_simple != 'solaris'
     end
 
-    # Returns whether the OS's main CPU architecture supports the
-    # x86/x86_64 sfence instruction.
-    def self.supports_sfence_instruction?
-      arch = cpu_architectures[0]
-      return arch == "x86_64" || (arch == "x86" &&
-        try_compile_and_run("Checking for sfence instruction support", :c, %Q{
-          int
-          main() {
-            __asm__ __volatile__ ("sfence" ::: "memory");
-            return 0;
-          }
-        }))
-    end
-    memoize :supports_sfence_instruction?, true
-
-    # Returns whether the OS's main CPU architecture supports the
-    # x86/x86_64 lfence instruction.
-    def self.supports_lfence_instruction?
-      arch = cpu_architectures[0]
-      return arch == "x86_64" || (arch == "x86" &&
-        try_compile_and_run("Checking for lfence instruction support", :c, %Q{
-          int
-          main() {
-            __asm__ __volatile__ ("lfence" ::: "memory");
-            return 0;
-          }
-        }))
-    end
-    memoize :supports_lfence_instruction?, true
-
     def self.requires_no_tls_direct_seg_refs?
       return File.exist?("/proc/xen/capabilities") && cpu_architectures[0] == "x86"
     end

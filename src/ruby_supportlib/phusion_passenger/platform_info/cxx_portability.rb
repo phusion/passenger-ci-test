@@ -135,8 +135,6 @@ module PhusionPassenger
 
       flags << '-DHAS_ALLOCA_H' if has_alloca_h?
       flags << '-DHAVE_ACCEPT4' if has_accept4?
-      flags << '-DHAS_SFENCE' if supports_sfence_instruction?
-      flags << '-DHAS_LFENCE' if supports_lfence_instruction?
       flags << "-DPASSENGER_DEBUG -DBOOST_DISABLE_ASSERTS"
 
       if cc_or_cxx == :cxx
