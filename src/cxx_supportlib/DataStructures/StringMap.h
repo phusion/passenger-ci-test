@@ -28,9 +28,8 @@
 
 #include <string>
 #include <utility>
-
+#include <unordered_map>
 #include <StaticString.h>
-#include <DataStructures/HashMap.h>
 
 namespace Passenger {
 
@@ -54,7 +53,7 @@ private:
 		pair<StaticString, T> thePair;
 	};
 
-	typedef HashMap<StaticString, Entry, StaticString::Hash> InternalMap;
+	typedef std::unordered_map<StaticString, Entry, StaticString::Hash> InternalMap;
 	typedef typename InternalMap::iterator InternalIterator;
 	typedef typename InternalMap::const_iterator InternalConstIterator;
 	typedef typename InternalMap::value_type ValueType;

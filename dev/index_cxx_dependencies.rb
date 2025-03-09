@@ -51,6 +51,7 @@ EXCLUDE_NAMES = %w{
   cstdlib
   cstddef
   cstdarg
+  cstdint
   cstring
   ctime
   csignal

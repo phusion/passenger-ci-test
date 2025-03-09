@@ -58,20 +58,6 @@ module PhusionPassenger
     memoize :default_extra_cxxflags, true
 
   private
-    def self.check_unordered_map(flags, class_name, header_name, macro_name)
-      ok = try_compile("Checking for unordered_map", :cxx, %Q{
-        #include <#{header_name}>
-        int
-        main() {
-          #{class_name}<int, int> m;
-          return 0;
-        }
-      })
-      flags << "-D#{macro_name}" if ok
-      return ok
-    end
-    private_class_method :check_unordered_map
-
     def self.check_hash_map(flags)
       hash_namespace = nil
       ok = false
@@ -167,12 +153,6 @@ module PhusionPassenger
           # format string.
           flags << '-Wno-format-nonliteral'
         end
-
-        # There are too many implementations of of the hash map!
-        # Figure out the right one.
-        check_unordered_map(flags, "std::unordered_map", "unordered_map", "HAS_UNORDERED_MAP") ||
-          check_unordered_map(flags, "std::tr1::unordered_map", "unordered_map", "HAS_TR1_UNORDERED_MAP") ||
-          check_hash_map(flags)
       else
         flags << debugging_cflags
       end
