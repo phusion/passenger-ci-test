@@ -195,9 +195,6 @@ def prepare
 end
 
 def cleanup
-  FileUtils.rm_rf("boost/asio/detail/old_win_sdk_compat.hpp")
-  FileUtils.rm_rf("boost/asio/win32")
-  FileUtils.rm_rf("boost/asio/windows")
   FileUtils.rm_rf("boost/atomic/detail/caps_windows.hpp")
   FileUtils.rm_rf("boost/atomic/detail/core_ops_windows.hpp")
   FileUtils.rm_rf("boost/atomic/detail/fence_ops_windows.hpp")
