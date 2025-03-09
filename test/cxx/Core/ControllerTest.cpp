@@ -51,9 +51,10 @@ namespace tut {
 				//   on the very next call, not subsequent calls. There's probably
 				//   something deeper wrong here, so increase log level to figure out
 				//   what's going on.
-				assert(mockSession != nullptr);
+				assert(mockSession != nullptr || mockException != nullptr);
 				callback(mockSession, mockException);
 				mockSession.reset();
+				mockException.reset();
 			}
 
 		public:
