@@ -563,12 +563,6 @@ module PhusionPassenger
     end
     memoize :has_dl_library?, true
 
-    def self.has_alloca_h?
-      return try_compile("Checking for alloca.h",
-        :c, '#include <alloca.h>')
-    end
-    memoize :has_alloca_h?, true
-
     def self.has_accept4?
       return try_compile("Checking for accept4()", :c, %Q{
         #define _GNU_SOURCE

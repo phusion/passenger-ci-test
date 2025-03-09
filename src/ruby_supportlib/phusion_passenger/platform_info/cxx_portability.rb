@@ -133,7 +133,6 @@ module PhusionPassenger
         end
       end
 
-      flags << '-DHAS_ALLOCA_H' if has_alloca_h?
       flags << '-DHAVE_ACCEPT4' if has_accept4?
       flags << "-DPASSENGER_DEBUG -DBOOST_DISABLE_ASSERTS"
 
