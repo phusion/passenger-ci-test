@@ -45,8 +45,8 @@ using namespace std;
 
 
 /**
- * A RAII construct for memory buffers that are dynamically allocated with malloc().
- * Upon destruction of a DynamicBuffer, the memory buffer is freed.
+ * RAII construct for memory buffers that are dynamically allocated with malloc().
+ * Upon destruction, the memory buffer is freed. Does not guarantee null terminator.
  */
 struct DynamicBuffer {
 private:

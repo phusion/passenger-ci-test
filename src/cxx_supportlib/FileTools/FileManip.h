@@ -226,6 +226,8 @@ void makeDirTree(const string &path, const StaticString &mode = "u=rwx,g=,o=",
  * function does nothing.
  *
  * @throws RuntimeException Something went wrong.
+ * @throws SystemException
+ * @throws boost::thread_interrupted
  */
 void removeDirTree(const string &path);
 

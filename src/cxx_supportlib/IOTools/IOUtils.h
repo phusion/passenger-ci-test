@@ -442,9 +442,11 @@ bool waitUntilReadable(int fd, unsigned long long *timeout);
 bool waitUntilWritable(int fd, unsigned long long *timeout);
 
 /**
- * Attempts to read exactly <tt>size</tt> bytes of data from the given file
- * descriptor, and put the result in <tt>buf</tt>. On non-blocking sockets
- * this function will block by poll()ing the socket.
+ * Attempts to read exactly `size` bytes of data, putting the result in `buf`.
+ * This is in contrast to read(), which may read less than `size` bytes even
+ * when EOF is not reached.
+ *
+ * On non-blocking sockets, this function blocks by poll()ing the socket.
  *
  * @param buf The buffer to place the read data in. This buffer must be at least
  *            <tt>size</tt> bytes long.
