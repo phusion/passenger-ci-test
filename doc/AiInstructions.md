@@ -91,6 +91,11 @@ Keep config option naming between the different integration modes consistent, ye
 ### For C++
 
 - Don't introduce direct libev/libuv dependency in components that don't already use libev/libuv/ServerKit.
+- Prefer using internal utility library.
+  - Prefer oxt/system_calls.hpp wrappers (e.g. oxt::open) over direct syscalls. If no wrapper available, loop until no EINTR.
+  - Consult Utils.h (general utils), IOUtils.h (I/O), FileTools/*.h (file operations).
+  - Prefer FileDescriptor or safelyClose() over close().
+- Mind security: see TempFileHandling.md; prefer safeReadFile() for reading files.
 - Before modifying .cpp files, research corresponding header files.
 - Be careful about object lifetimes. For example, if an object must live longer than the scope, consider storing it as a class field.
 
