@@ -33,13 +33,6 @@
 #include <sys/stat.h>
 #include <string>
 #include <vector>
-#include <utility>
-#include <sstream>
-#include <cstdio>
-#include <climits>
-#include <cstdlib>
-#include <cstring>
-#include <errno.h>
 #include <unistd.h>
 #include <StaticString.h>
 #include <Exceptions.h>

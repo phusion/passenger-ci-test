@@ -26,6 +26,7 @@
 #include "detail/context.hpp"
 #include <boost/thread.hpp>
 #include <cerrno>
+#include <signal.h>
 
 using namespace boost;
 using namespace oxt;
