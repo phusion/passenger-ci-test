@@ -26,7 +26,6 @@
 ESSENTIALS = [
   "boost/*regex*",
   "boost/algorithm/string",
-  "boost/asio*",
   "boost/atomic",
   "boost/bind",
   "boost/chrono*",
@@ -83,14 +82,9 @@ EXCLUDE = [
   "libs/regex/src/usinstances.cpp",
   "boost/atomic/detail/windows.hpp",
   "boost/regex/icu.hpp",
-  "boost/asio/detail/win*",
-  "boost/asio/detail/impl/win*"
 ]
 PROGRAM_SOURCE = %q{
   #include <boost/aligned_storage.hpp>
-  #include <boost/asio.hpp>
-  #include <boost/asio/ssl.hpp>
-  #include <boost/asio/steady_timer.hpp>
   #include <boost/atomic.hpp>
   #include <boost/bind/bind.hpp>
   #include <boost/chrono.hpp>
@@ -136,14 +130,12 @@ PROGRAM_SOURCE = %q{
   #include <boost/thread/once.hpp>
   #include <boost/thread/tss.hpp>
   #include <boost/typeof/typeof.hpp>
-  #include <boost/unordered_map.hpp>
   #include <boost/version.hpp>
   #include <boost/weak_ptr.hpp>
 // Included despite not used in Passenger
   #include <boost/thread/thread_time.hpp>
   #include <boost/cregex.hpp>
   #include <boost/pointer_cast.hpp>
-  #include <boost/asio.hpp>
 }
 
 require 'fileutils'
