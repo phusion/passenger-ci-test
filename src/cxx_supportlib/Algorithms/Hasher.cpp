@@ -42,7 +42,7 @@ JenkinsHash::update(const char *data, unsigned int size) {
 	}
 }
 
-boost::uint32_t
+std::uint32_t
 JenkinsHash::finalize() {
 	hash += (hash << 3);
 	hash ^= (hash >> 11);

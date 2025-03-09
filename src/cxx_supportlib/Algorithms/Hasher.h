@@ -26,25 +26,22 @@
 #ifndef _PASSENGER_ALGORITHMS_HASHER_H_
 #define _PASSENGER_ALGORITHMS_HASHER_H_
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 namespace Passenger {
 
 
-// TODO: use SpookyHash on x86_64
-// TODO: use streaming murmurhash implementation: https://github.com/c9/murmur3
-
 struct JenkinsHash {
-	static const boost::uint32_t EMPTY_STRING_HASH = 0;
+	static const std::uint32_t EMPTY_STRING_HASH = 0;
 
-	boost::uint32_t hash;
+	std::uint32_t hash;
 
 	JenkinsHash()
 		: hash(0)
 		{ }
 
 	void update(const char *data, unsigned int size);
-	boost::uint32_t finalize();
+	std::uint32_t finalize();
 
 	void reset() {
 		hash = 0;
