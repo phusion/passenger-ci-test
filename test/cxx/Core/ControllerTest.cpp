@@ -14,22 +14,53 @@ using namespace Passenger;
 using namespace Passenger::Core;
 
 namespace tut {
+	/*
+	 * How this test suite works:
+     *
+	 * 1. Initialization:
+	 *    Call init() early, which creates a controller and starts a background event loop.
+	 *
+	 * 2. Mocking sessions:
+	 *    Use useTestSessionObject() to mock the session object that the the controller
+	 *    receives from ApplicationPool.
+	 *
+	 * 3. Testing requests to the controller:
+	 *    1. Establish a connection with connectToServer().
+     *    2. Use sendRequest() to send an HTTP requests.
+	 *    3. Optional: call waitUntilSessionInitiated() to wait until the controller
+	 *       has initiated a session. This adds an extra check so that if the test fails
+	 *       then you at least know whether the problem is before or after session initiation.
+	 *    4. Use readPeerRequestHeader() to read the HTTP response.
+	 *    5. Perform assertions on peerRequestHeader, which contains the HTTP response header.
+	 */
 	struct Core_ControllerTest: public TestBase {
-		class MyController: public Core::Controller {
+		/*
+		 * Works just like the normal Core::Controller, but allows the `appPool->asyncGet()`
+		 * result to be mocked by assigning the corresponding fields.
+		 */
+		class TestController: public Core::Controller {
 		protected:
 			virtual void asyncGetFromApplicationPool(Request *req,
 				ApplicationPool2::GetCallback callback)
+				override
 			{
-				assert(sessionToReturn != nullptr);
-				callback(sessionToReturn, exceptionToReturn);
-				sessionToReturn.reset();
+				// If this assertion fails then it means one of:
+				// - You didn't call `mockNextSession()`, or:
+				// - The controller called `appPool->asyncGet()` multiple times.
+				//   Remember that `mockNextSession()` only mocks the session object
+				//   on the very next call, not subsequent calls. There's probably
+				//   something deeper wrong here, so increase log level to figure out
+				//   what's going on.
+				assert(mockSession != nullptr);
+				callback(mockSession, mockException);
+				mockSession.reset();
 			}
 
 		public:
-			ApplicationPool2::AbstractSessionPtr sessionToReturn;
-			ApplicationPool2::ExceptionPtr exceptionToReturn;
+			ApplicationPool2::AbstractSessionPtr mockSession;
+			ApplicationPool2::ExceptionPtr mockException;
 
-			MyController(ServerKit::Context *context,
+			TestController(ServerKit::Context *context,
 				const Core::ControllerSchema &schema,
 				const Json::Value &initialConfig,
 				const Core::ControllerSingleAppModeSchema &singleAppModeSchema,
@@ -45,7 +76,7 @@ namespace tut {
 		WrapperRegistry::Registry wrapperRegistry;
 		Core::ControllerSchema schema;
 		Core::ControllerSingleAppModeSchema singleAppModeSchema;
-		MyController *controller;
+		TestController *controller;
 		SpawningKit::Context::Schema skContextSchema;
 		SpawningKit::Context skContext;
 		SpawningKit::FactoryPtr spawningKitFactory;
@@ -108,11 +139,11 @@ namespace tut {
 			LoggingKit::setLevel(LoggingKit::CRIT);
 			clientConnection.close();
 			if (controller != NULL) {
-				bg.safe->runSync(boost::bind(&MyController::shutdown, controller, true));
-				while (getServerState() != MyController::FINISHED_SHUTDOWN) {
+				bg.safe->runSync([&] { controller->shutdown(true); });
+				while (getServerState() != TestController::FINISHED_SHUTDOWN) {
 					syscalls::usleep(10000);
 				}
-				bg.safe->runSync(boost::bind(&Core_ControllerTest::destroyController, this));
+				bg.safe->runSync([this] { delete controller; });
 			}
 			safelyClose(serverSocket);
 			unlink("tmp.server");
@@ -125,12 +156,8 @@ namespace tut {
 			}
 		}
 
-		void destroyController() {
-			delete controller;
-		}
-
 		void init() {
-			controller = new MyController(&context, schema, config,
+			controller = new TestController(&context, schema, config,
 				singleAppModeSchema, singleAppModeConfig);
 			controller->resourceLocator = resourceLocator;
 			controller->wrapperRegistry = &wrapperRegistry;
@@ -160,43 +187,35 @@ namespace tut {
 			ensure_equals(getTotalBytesConsumed(), totalBytesConsumed + data.size());
 		}
 
-		void useTestSessionObject() {
+		/**
+		 * Ensures that the next time the controller calls `appPool->asyncGet()`, it gets `testSession`
+		 * instead of a real Session.
+		 *
+		 * Note that this only works for the next invocation of `appPool->asyncGet()`. Subsequent calls
+		 * get nullptr unless you call `mockNextSession()` again before that happens.
+		 */
+		void mockNextSession() {
 			bg.safe->runSync([&] {
-				controller->sessionToReturn.reset(&testSession, false);
+				controller->mockSession.reset(&testSession, false);
 			});
 		}
 
-		MyController::State getServerState() {
+		TestController::State getServerState() {
 			Controller::State result;
-			bg.safe->runSync(boost::bind(&Core_ControllerTest::_getServerState,
-				this, &result));
+			bg.safe->runSync([&] { result = controller->serverState; });
 			return result;
-		}
-
-		void _getServerState(MyController::State *state) {
-			*state = controller->serverState;
 		}
 
 		Json::Value inspectStateAsJson() {
 			Json::Value result;
-			bg.safe->runSync(boost::bind(&Core_ControllerTest::_inspectStateAsJson,
-				this, &result));
+			bg.safe->runSync([&] { result = controller->inspectStateAsJson(); });
 			return result;
-		}
-
-		void _inspectStateAsJson(Json::Value *result) {
-			*result = controller->inspectStateAsJson();
 		}
 
 		unsigned long long getTotalBytesConsumed() {
 			unsigned long long result;
-			bg.safe->runSync(boost::bind(&Core_ControllerTest::_getTotalBytesConsumed,
-				this, &result));
+			bg.safe->runSync([&] { result = controller->totalBytesConsumed; });
 			return result;
-		}
-
-		void _getTotalBytesConsumed(unsigned long long *result) {
-			*result = controller->totalBytesConsumed;
 		}
 
 		string readPeerRequestHeader(string *peerRequestHeader = NULL) {
@@ -306,7 +325,7 @@ namespace tut {
 		set_test_name("Session protocol: request URI");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -325,7 +344,7 @@ namespace tut {
 		set_test_name("HTTP protocol: request URI");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 		testSession.setProtocol("http_session");
 
 		connectToServer();
@@ -350,7 +369,7 @@ namespace tut {
 			" and forwards the raw data");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -380,7 +399,7 @@ namespace tut {
 			" and forwards the chunked data");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -415,7 +434,7 @@ namespace tut {
 			" and forwards the raw data");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -457,7 +476,7 @@ namespace tut {
 			" and forwards the raw data");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -483,7 +502,7 @@ namespace tut {
 			" it forwards the chunked data");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -517,7 +536,7 @@ namespace tut {
 			" it forwards the raw data");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -557,7 +576,7 @@ namespace tut {
 		set_test_name("Fixed response body");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -584,7 +603,7 @@ namespace tut {
 		set_test_name("Response body until EOF");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -610,7 +629,7 @@ namespace tut {
 		set_test_name("Chunked response body");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -642,7 +661,7 @@ namespace tut {
 		set_test_name("Upgraded response body");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -672,7 +691,7 @@ namespace tut {
 		set_test_name("Perform keep-alive on application responses that allow it");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -698,7 +717,7 @@ namespace tut {
 		set_test_name("Don't perform keep-alive on application responses that don't allow it");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -725,7 +744,7 @@ namespace tut {
 		set_test_name("Don't perform keep-alive if an error occurred");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -758,7 +777,7 @@ namespace tut {
 			" application connection");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -788,7 +807,7 @@ namespace tut {
 			" application connection");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -819,7 +838,7 @@ namespace tut {
 			" application connection");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -850,7 +869,7 @@ namespace tut {
 			" application connection");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -882,7 +901,7 @@ namespace tut {
 			" early read error and does not keep-alive the application connection");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 		testSession.setProtocol("http_session");
 
 		connectToServer();
@@ -912,7 +931,7 @@ namespace tut {
 			" early read error and does not keep-alive the application connection");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 		testSession.setProtocol("http_session");
 
 		connectToServer();
@@ -945,7 +964,7 @@ namespace tut {
 			" and does not keep-alive the application connection");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 		testSession.setProtocol("http_session");
 
 		connectToServer();
@@ -979,7 +998,7 @@ namespace tut {
 			" application connection");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 		testSession.setProtocol("http_session");
 
 		connectToServer();
@@ -1013,7 +1032,7 @@ namespace tut {
 			" we still try to send a 502 (which shouldn't log warn)");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -1040,7 +1059,7 @@ namespace tut {
 			" we still try to send a 502 (which shouldn't log warn)");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 		testSession.setProtocol("http_session");
 
 		connectToServer();
@@ -1067,7 +1086,7 @@ namespace tut {
 			" we should send a 502 (which should log warn)");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 
 		connectToServer();
 		sendRequest(
@@ -1096,7 +1115,7 @@ namespace tut {
 			" we should send a 502 (which should log warn)");
 
 		init();
-		useTestSessionObject();
+		mockNextSession();
 		testSession.setProtocol("http_session");
 
 		connectToServer();
