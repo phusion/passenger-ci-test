@@ -34,7 +34,6 @@
 #include <oxt/backtrace.hpp>
 
 #include <cstdio>
-#include <cerrno>
 #include <cstring>
 #include <cctype>
 #include <stdlib.h>

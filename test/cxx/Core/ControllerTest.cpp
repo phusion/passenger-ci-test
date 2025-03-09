@@ -70,6 +70,7 @@ namespace tut {
 				{ }
 		};
 
+		// Dependencies
 		BackgroundEventLoop bg;
 		ServerKit::Schema skSchema;
 		ServerKit::Context context;
@@ -84,7 +85,11 @@ namespace tut {
 		PoolPtr appPool;
 		Json::Value config, singleAppModeConfig;
 		int serverSocket;
+
+		// Mock objects
 		TestSession testSession;
+
+		// Connection and response objects
 		FileDescriptor clientConnection;
 		BufferedIO clientConnectionIO;
 		string peerRequestHeader;

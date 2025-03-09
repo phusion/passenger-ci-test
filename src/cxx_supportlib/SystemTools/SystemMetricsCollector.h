@@ -31,14 +31,12 @@
 #include <boost/typeof/typeof.hpp>
 #include <ostream>
 #include <iomanip>
-#include <algorithm>
 #include <limits>
 #include <vector>
 #include <string>
 #include <cstdio>
 #include <cstdlib>
 #include <climits>
-#include <cmath>
 #include <ctime>
 #include <sys/types.h>
 #include <sys/utsname.h>

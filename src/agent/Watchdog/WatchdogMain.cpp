@@ -34,7 +34,6 @@
 #include <boost/foreach.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <string>
-#include <utility>
 #include <vector>
 #include <algorithm>
 
@@ -89,7 +88,6 @@
 #include <Utils/ScopeGuard.h>
 #include <StrIntTools/StrIntUtils.h>
 #include <Utils/OptionParsing.h>
-#include <Utils/VariantMap.h>
 
 using namespace std;
 using namespace boost;

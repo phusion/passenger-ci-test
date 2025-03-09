@@ -48,29 +48,6 @@ using namespace boost;
 class ResourceLocator;
 
 /**
- * Convenience shortcut for creating a <tt>shared_ptr</tt>.
- * Instead of:
- * @code
- *    boost::shared_ptr<Foo> foo;
- *    ...
- *    foo = boost::shared_ptr<Foo>(new Foo());
- * @endcode
- * one can write:
- * @code
- *    boost::shared_ptr<Foo> foo;
- *    ...
- *    foo = ptr(new Foo());
- * @endcode
- *
- * @param pointer The item to put in the boost::shared_ptr object.
- * @ingroup Support
- */
-template<typename T> boost::shared_ptr<T>
-ptr(T *pointer) {
-	return boost::shared_ptr<T>(pointer);
-}
-
-/**
  * Escape the given raw string into an XML value.
  *
  * @throws std::bad_alloc Something went wrong.

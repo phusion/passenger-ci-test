@@ -33,7 +33,6 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
-#include <cassert>
 #include <cctype>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
@@ -68,7 +67,7 @@ public:
 			return string();
 		}
 	}
-	
+
 	string operator[](const string &keyName) const {
 		return get(keyName);
 	}
@@ -120,15 +119,15 @@ public:
 				"<T_TEXT>",
 				"<T_EOF>"
 			};
-			
+
 			return KIND_IDENTITY_TABLE[kind];
 		}
 
 		Token(const Kind kind, const string &value, const int line, const int column)
 			: kind(kind), value(value), line(line), column(column) {
-			
+
 		}
-		
+
 		class ExpectanceException : public std::exception {
 		private:
 			char message[255];
@@ -168,7 +167,7 @@ public:
 
 	typedef boost::shared_ptr<IniFileLexer::Token> TokenPtr;
 
-	
+
 
 protected:
 	ifstream iniFileStream;
@@ -184,7 +183,7 @@ protected:
 
 	void expect(char ch) {
 		int upcomingChar = iniFileStream.peek();
-	
+
 		if (ch != upcomingChar) {
 			switch(upcomingChar) {
 				case EOF:
@@ -202,11 +201,11 @@ protected:
 
 	void accept() {
 		if (upcomingChar == EOF) return;
-	
+
 		lastAcceptedChar = (char)iniFileStream.get();
 		upcomingChar     = iniFileStream.peek();
 		currentColumn++;
-	
+
 		if (lastAcceptedChar == '\n') {
 			currentLine++;
 			currentColumn = 1;
@@ -215,10 +214,10 @@ protected:
 
 	void ignore() {
 		if (upcomingChar == EOF) return;
-	
+
 		upcomingChar = iniFileStream.peek();
 		currentColumn++;
-	
+
 		if ((char)iniFileStream.get() == '\n') {
 			currentLine++;
 			currentColumn = 1;
@@ -246,12 +245,12 @@ protected:
 		int line   = currentLine;
 		int column = currentColumn;
 		string result;
-	
+
 		while (isalnum(upcomingChar) || upcomingChar == '_' || upcomingChar == '-') {
 			result.append(1, upcomingChar);
 			accept();
 		}
-			
+
 		return Token(Token::IDENTIFIER, result, line, column);
 	}
 
@@ -266,13 +265,13 @@ protected:
 		int line   = currentLine;
 		int column = currentColumn;
 		string result;
-	
+
 		//while (upcomingChar != ']' && upcomingChar != '[' && upcomingChar != '\n' && upcomingChar != EOF) {
 		while (isalnum(upcomingChar) || upcomingChar == '_' || upcomingChar == '-') {
 			result.append(1, upcomingChar);
 			accept();
 		}
-	
+
 		return Token(Token::SECTION_NAME, result, line, column);
 	}
 
@@ -285,12 +284,12 @@ protected:
 		int line   = currentLine;
 		int column = currentColumn;
 		string result;
-	
+
 		while (upcomingChar != '\n' && upcomingChar != EOF) {
 			result.append(1, upcomingChar);
 			accept();
 		}
-	
+
 		return Token(Token::TEXT, result, line, column);
 	}
 
@@ -306,12 +305,12 @@ protected:
 		int line   = currentLine;
 		int column = currentColumn;
 		string result;
-	
+
 		while (upcomingChar != EOF) {
 			result.append(1, upcomingChar);
 			accept();
 		}
-	
+
 		return Token(Token::UNKNOWN, result, line, column);
 	}
 
@@ -346,7 +345,7 @@ public:
 			upcomingTokenPtr = boost::make_shared<Token>(upcomingToken);
 			upcomingTokenPtrIsStale = false;
 		}
-	
+
 		return upcomingTokenPtr;
 	}
 
@@ -355,7 +354,7 @@ public:
 			upcomingTokenPtrIsStale = true;
 			return *upcomingTokenPtr;
 		}
-	
+
 		while (iniFileStream.good()) {
 			upcomingChar = iniFileStream.peek();
 			switch(upcomingChar) {
@@ -392,7 +391,7 @@ public:
 					}
 			}
 		}
-	
+
 		return Token(Token::END_OF_FILE, "<END_OF_FILE>", currentLine, currentColumn);
 	}
 };
@@ -405,7 +404,7 @@ protected:
 	typedef map<string, IniFileSectionPtr> SectionMap;
 	string name;
 	SectionMap sections;
-	
+
 	class IniFileParser {
 	typedef IniFileLexer::Token Token;
 
@@ -414,7 +413,7 @@ protected:
 		IniFile *iniFile;
 
 		// The Start Symbol.
-		void parseSections() {		
+		void parseSections() {
 			while ((lexer.peekToken())->kind == Token::SECTION_NAME) {
 				parseSection();
 			}
@@ -476,7 +475,7 @@ protected:
 			parseSections();
 		}
 	};
-	
+
 public:
 	IniFile(const string &iniFileName)
 		: name(iniFileName)
