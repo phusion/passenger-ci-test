@@ -4,7 +4,7 @@ C++ tests use a modified version of the [Tut test framework](https://mrzechonek.
 
 Test files are placed in test/cxx/SomethingTest.cpp.
 
-Example:
+## Test suite example
 
 ```c++
 #include <TestSupport.h> // Always include this
@@ -25,7 +25,8 @@ namespace tut {
     TEST_METHOD(1) {
         set_test_name("Description for test 1");
 
-        // Test logic here
+        // Test logic here.
+        // `this` is a SomethingTest instance.
 
         ensure_equals("Description for assertion 1", 1, something.foo());
         ensure_equals("Description for assertion 2", 2, something.bar());
@@ -34,12 +35,13 @@ namespace tut {
     TEST_METHOD(2) {
         set_test_name("Description for test 2");
 
-        // Test logic here
+        // Test logic here.
+        // `this` is a SomethingTest instance.
     }
 }
 ```
 
-Available assertions:
+## Available assertions
 
  - `ensure([description,] bool)` — Asserts argument is true.
  - `ensure_not([description,] bool)`
@@ -49,7 +51,7 @@ Available assertions:
  - `ensure_distance([description,] a, b, d)` — Asserts the distance between `a` and `b` is <= `d`.
  - `fail(description)` — Fails the test case.
 
-Special assertions for multithreaded code:
+### Special assertions for multithreaded code
 
  - `EVENTUALLY(deadlineSeconds, code)` — Asserts that "something eventually happens".
 
@@ -83,3 +85,26 @@ Special assertions for multithreaded code:
   ```
 
   The notes for `EVENTUALLY()` also apply here.
+
+## Mocking
+
+See [C++ mocking strategy](CxxMockingStrategy.md).
+
+## Running tests
+
+Prerequisite: ensure `test/config.json` exists. Refer to its `.example` file.
+
+```bash
+# Run all test suites
+rake test:cxx GROUPS=SomethingTest
+
+# Run specific test suites
+rake test:cxx GROUPS=SomethingTest,AnotherTest
+
+# Run specific tests by number
+rake test:cxx GROUPS=SomethingTest:1,3
+
+# Attach to GDB or LLDB
+rake test:cxx GROUPS=SomethingTest GDB=1
+rake test:cxx GROUPS=SomethingTest LLDB=1
+```
