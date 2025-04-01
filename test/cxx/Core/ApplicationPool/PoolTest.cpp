@@ -5,6 +5,7 @@
 #include <FileTools/FileManip.h>
 #include <StrIntTools/StrIntUtils.h>
 #include <IOTools/MessageSerialization.h>
+#include <IOTools/IOUtils.h>
 #include <vector>
 #include <cerrno>
 #include <signal.h>
@@ -190,7 +191,15 @@ namespace tut {
 				P_ERROR("get() exception: " << currentException->what());
 				abort();
 			}
-			currentSession->initiate();
+			if (!currentSession->initiate()) {
+				unsigned long long timeout = 10000;
+				ensure("(1)", waitUntilWritable(currentSession->fd(), &timeout));
+				int connectError = 0;
+				socklen_t connectErrorLen = sizeof(connectError);
+				ensure_not_equals("(2)", -1, getsockopt(currentSession->fd(), SOL_SOCKET, SO_ERROR, &connectError, &connectErrorLen));
+				ensure_equals("(3)", connectError, 0);
+			}
+			setBlocking(currentSession->fd());
 			sendHeaders(currentSession->fd(),
 				"PATH_INFO", path,
 				"REQUEST_METHOD", "GET",

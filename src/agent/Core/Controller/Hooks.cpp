@@ -23,6 +23,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+#include <Constants.h>
 #include <Core/Controller.h>
 
 /*************************************************************************
@@ -123,6 +124,10 @@ Controller::reinitializeRequest(Client *client, Request *req) {
 	// bodyBuffer is initialized in Controller::beginBufferingBody().
 	// appSink and appSource are initialized in Controller::checkoutSession().
 
+
+	req->connectedWatcher.active = false;
+	req->connectedWatcherTimout.active = false;
+
 	req->startedAt = 0;
 	req->state = Request::ANALYZING_REQUEST;
 	req->dechunkResponse = false;
@@ -134,6 +139,7 @@ Controller::reinitializeRequest(Client *client, Request *req) {
 	req->appResponseInitialized = false;
 	req->strip100ContinueHeader = false;
 	req->hasPragmaHeader = false;
+	req->connectTimeout = DEFAULT_CONNECT_TIMEOUT;
 	req->host = NULL;
 	req->config = requestConfig;
 	req->bodyBytesBuffered = 0;
@@ -154,6 +160,13 @@ Controller::reinitializeRequest(Client *client, Request *req) {
 
 void
 Controller::deinitializeRequest(Client *client, Request *req) {
+	if (req->connectedWatcher.active) {
+		ev_io_stop(getLoop(), &req->connectedWatcher);
+	}
+	if (req->connectedWatcherTimout.active) {
+		ev_timer_stop(getLoop(), &req->connectedWatcherTimout);
+	}
+
 	req->session.reset();
 	req->config.reset();
 

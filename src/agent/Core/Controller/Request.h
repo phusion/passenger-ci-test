@@ -76,11 +76,14 @@ public:
 	bool appResponseInitialized: 1;
 	bool strip100ContinueHeader: 1;
 	bool hasPragmaHeader: 1;
+	unsigned int connectTimeout;
 
 	Options options;
 	AbstractSessionPtr session;
 	const LString *host;
 	ControllerRequestConfigPtr config;
+	ev_io connectedWatcher;
+	ev_timer connectedWatcherTimout;
 
 	ServerKit::FdSinkChannel appSink;
 	ServerKit::FdSourceChannel appSource;

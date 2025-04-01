@@ -48,6 +48,7 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <utility>
+#include <exception>
 #include <cstdio>
 #include <cstdlib>
 #include <cstddef>
@@ -99,10 +100,6 @@ private:
 	typedef ServerKit::FdSourceChannel FdSourceChannel;
 	typedef ServerKit::FileBufferedChannel FileBufferedChannel;
 	typedef ServerKit::FileBufferedFdSinkChannel FileBufferedFdSinkChannel;
-
-	// If you change this value, make sure that Request::sessionCheckoutTry
-	// has enough bits.
-	static const unsigned int MAX_SESSION_CHECKOUT_TRY = 10;
 
 	ControllerMainConfig mainConfig;
 	ControllerRequestConfigPtr requestConfig;
@@ -195,9 +192,13 @@ private:
 		const AbstractSessionPtr &session, const ExceptionPtr &e);
 	void maybeSend100Continue(Client *client, Request *req);
 	void initiateSession(Client *client, Request *req);
+	void finishInitiatingSession(Client *client, Request *req);
+	static void onSessionSocketConnected(EV_P_ ev_io *io, int revents);
+	static void onSessionSocketConnectTimeout(EV_P_ ev_timer *io, int flag);
 	static void checkoutSessionLater(Request *req);
 	void reportSessionCheckoutError(Client *client, Request *req,
 		const ExceptionPtr &e);
+	void handleSessionInitiationError(Client *client, Request *req, const std::exception &e);
 	int lookupCodeFromHeader(Request *req, const char* header, int statusCode);
 	void writeRequestQueueFullExceptionErrorResponse(Client *client,
 		Request *req, const boost::shared_ptr<RequestQueueFullException> &e);
@@ -311,6 +312,7 @@ private:
 	void endRequestWithSimpleResponse(Client **c, Request **r,
 		const StaticString &body, int code = 200);
 	void endRequestAsBadGateway(Client **client, Request **req);
+	void endRequestAsGatewayTimeout(Client **client, Request **req);
 	void writeBenchmarkResponse(Client **client, Request **req,
 		bool end = true);
 	bool getBoolOption(Request *req, const HashedStaticString &name,
@@ -355,9 +357,15 @@ protected:
 
 	virtual void asyncGetFromApplicationPool(Request *req,
 		ApplicationPool2::GetCallback callback);
+	virtual int getSessionSocketConnectIoWatchConditions() const;
+	virtual double getSessionSocketEffectiveConnectTimeout(Request *req) const;
 
 
 public:
+	// If you change this value, make sure that Request::sessionCheckoutTry
+	// has enough bits.
+	static constexpr unsigned int MAX_SESSION_CHECKOUT_TRY = 10;
+
 	typedef ControllerConfigChangeRequest ConfigChangeRequest;
 
 	// Dependencies

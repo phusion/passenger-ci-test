@@ -185,20 +185,15 @@ public:
 		return getSocket()->protocol;
 	}
 
-
-	virtual void initiate(bool blocking = true) override {
+	// See AbstractSession.h for docs
+	virtual bool initiate() override {
 		assert(!closed);
 		ScopeGuard g(boost::bind(&Session::callOnInitiateFailure, this));
 		Connection connection = socket->checkoutConnection();
 		connection.fail = true;
-		if (connection.blocking && !blocking) {
-			FdGuard g2(connection.fd, NULL, 0);
-			setNonBlocking(connection.fd);
-			g2.clear();
-			connection.blocking = false;
-		}
 		g.clear();
 		this->connection = connection;
+		return connection.ready;
 	}
 
 	bool initiated() const {

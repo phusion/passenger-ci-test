@@ -51,13 +51,13 @@ struct Connection {
 	int fd;
 	bool wantKeepAlive: 1;
 	bool fail: 1;
-	bool blocking: 1;
+	bool ready: 1;
 
 	Connection()
 		: fd(-1),
 		  wantKeepAlive(false),
 		  fail(false),
-		  blocking(true)
+		  ready(false)
 		{ }
 
 	void close() {
@@ -85,13 +85,15 @@ private:
 		return concurrency;
 	}
 
+	/** Initiates a non-blocking connect. */
 	Connection connect() const {
 		Connection connection;
 		P_TRACE(3, "Connecting to " << address);
-		connection.fd = connectToServer(address, __FILE__, __LINE__);
+		NConnect_State state(address, __FILE__, __LINE__);
+		connection.ready = state.connectToServer();
 		connection.fail = true;
+		connection.fd = state.getFd().detach();
 		connection.wantKeepAlive = false;
-		connection.blocking = true;
 		P_LOG_FILE_DESCRIPTOR_PURPOSE(connection.fd, "App " << pid << " connection");
 		return connection;
 	}
@@ -164,15 +166,22 @@ public:
 	}
 
 	/**
-	 * Connect to this socket or reuse an existing connection.
+	 * Initiates a non-blocking connection to this socket or reuse an existing connection.
+	 * Use `result.ready` to check whether the connect is finished or whether you need
+	 * to wait for it to finish.
 	 *
 	 * One MUST call checkinConnection() when one's done using the Connection.
 	 * Failure to do so will result in a resource leak.
+	 *
+	 * @throws SystemException Something went wrong.
+	 * @throws RuntimeException Something went wrong.
+	 * @throws boost::thread_interrupted A system call has been interrupted.
 	 */
 	Connection checkoutConnection() {
 		boost::unique_lock<boost::mutex> l(connectionPoolLock);
 
 		if (!idleConnections.empty()) {
+			TRACE_POINT();
 			P_TRACE(3, "Socket " << address << ": checking out connection from connection pool (" <<
 				idleConnections.size() << " -> " << (idleConnections.size() - 1) <<
 				" items). Current total number of connections: " << totalConnections);
@@ -181,6 +190,7 @@ public:
 			totalIdleConnections--;
 			return connection;
 		} else {
+			TRACE_POINT();
 			Connection connection = connect();
 			totalConnections++;
 			P_TRACE(3, "Socket " << address << ": there are now " <<

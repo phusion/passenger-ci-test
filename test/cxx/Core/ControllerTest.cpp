@@ -7,6 +7,7 @@
 #include <IOTools/MessageIO.h>
 #include <Core/ApplicationPool/TestSession.h>
 #include <Core/Controller.h>
+#include <ev.h>
 
 using namespace std;
 using namespace boost;
@@ -16,7 +17,7 @@ using namespace Passenger::Core;
 namespace tut {
 	/*
 	 * How this test suite works:
-     *
+	 *
 	 * 1. Initialization:
 	 *    Call init() early, which creates a controller and starts a background event loop.
 	 *
@@ -26,7 +27,7 @@ namespace tut {
 	 *
 	 * 3. Testing requests to the controller:
 	 *    1. Establish a connection with connectToServer().
-     *    2. Use sendRequest() to send an HTTP requests.
+	 *    2. Use sendRequest() to send an HTTP requests.
 	 *    3. Optional: call waitUntilSessionInitiated() to wait until the controller
 	 *       has initiated a session. This adds an extra check so that if the test fails
 	 *       then you at least know whether the problem is before or after session initiation.
@@ -36,7 +37,8 @@ namespace tut {
 	struct Core_ControllerTest: public TestBase {
 		/*
 		 * Works just like the normal Core::Controller, but allows the `appPool->asyncGet()`
-		 * result to be mocked by assigning the corresponding fields.
+		 * result as well as the session socket connect timeout to be mocked by assigning the corresponding fields.
+		 * It also allows causing the session socket to delay connecting forever by setting forceSessionSocketConnectTimeout.
 		 */
 		class TestController: public Core::Controller {
 		protected:
@@ -46,20 +48,41 @@ namespace tut {
 			{
 				// If this assertion fails then it means one of:
 				// - You didn't call `mockNextSession()`, or:
-				// - The controller called `appPool->asyncGet()` multiple times.
+				// - The controller called `appPool->asyncGet()` too many times.
 				//   Remember that `mockNextSession()` only mocks the session object
-				//   on the very next call, not subsequent calls. There's probably
+				//   for the specified number of calls. There's probably
 				//   something deeper wrong here, so increase log level to figure out
-				//   what's going on.
+				//   what's going on. One example is an EVENTUALLY timeout causing a
+				//   varying number of calls to asyncGet to happen, and you mocked too few.
 				assert(mockSession != nullptr || mockException != nullptr);
 				callback(mockSession, mockException);
-				mockSession.reset();
-				mockException.reset();
+				if (--mockedSessionCount == 0) {
+					mockSession.reset();
+					mockException.reset();
+				}
+			}
+
+			virtual int getSessionSocketConnectIoWatchConditions() const override {
+				if (forceSessionSocketConnectTimeout) {
+					return EV_READ;
+				} else {
+					return Controller::getSessionSocketConnectIoWatchConditions();
+				}
+			}
+
+			virtual double getSessionSocketEffectiveConnectTimeout(Request *req) const override {
+				if (forceSessionSocketConnectTimeout) {
+					return req->connectTimeout / 1000.0;
+				} else {
+					return Controller::getSessionSocketEffectiveConnectTimeout(req);
+				}
 			}
 
 		public:
 			ApplicationPool2::AbstractSessionPtr mockSession;
 			ApplicationPool2::ExceptionPtr mockException;
+			unsigned int mockedSessionCount;
+			bool forceSessionSocketConnectTimeout;
 
 			TestController(ServerKit::Context *context,
 				const Core::ControllerSchema &schema,
@@ -67,7 +90,9 @@ namespace tut {
 				const Core::ControllerSingleAppModeSchema &singleAppModeSchema,
 				const Json::Value &singleAppModeConfig)
 				: Core::Controller(context, schema, initialConfig, ConfigKit::DummyTranslator(),
-					&singleAppModeSchema, &singleAppModeConfig, ConfigKit::DummyTranslator())
+				   &singleAppModeSchema, &singleAppModeConfig, ConfigKit::DummyTranslator()),
+				  mockedSessionCount(0),
+				  forceSessionSocketConnectTimeout(false)
 				{ }
 		};
 
@@ -197,11 +222,12 @@ namespace tut {
 		 * Ensures that the next time the controller calls `appPool->asyncGet()`, it gets `testSession`
 		 * instead of a real Session.
 		 *
-		 * Note that this only works for the next invocation of `appPool->asyncGet()`. Subsequent calls
-		 * get nullptr unless you call `mockNextSession()` again before that happens.
+		 * Note that this only works for the next `sessions` number of invocations of `appPool->asyncGet()`.
+		 * Subsequent calls get nullptr unless you call `mockNextSession()` again before that happens.
 		 */
-		void mockNextSession() {
+		void mockNextSession(unsigned int sessions = 1) {
 			bg.safe->runSync([&] {
+				controller->mockedSessionCount = sessions;
 				controller->mockSession.reset(&testSession, false);
 			});
 		}
@@ -209,6 +235,12 @@ namespace tut {
 		TestController::State getServerState() {
 			Controller::State result;
 			bg.safe->runSync([&] { result = controller->serverState; });
+			return result;
+		}
+
+		unsigned int getRemainingMockedRequests() {
+			unsigned int result;
+			bg.safe->runSync([&] { result = controller->mockedSessionCount; });
 			return result;
 		}
 
@@ -1087,8 +1119,8 @@ namespace tut {
 	}
 
 	TEST_METHOD(55) {
-		set_test_name("Session protocol: if application decides not to "
-			" finish the response (close), and the client is still there "
+		set_test_name("Session protocol: if application decides not to"
+			" finish the response (close), and the client is still there"
 			" we should send a 502 (which should log warn)");
 
 		init();
@@ -1116,8 +1148,8 @@ namespace tut {
 	}
 
 	TEST_METHOD(56) {
-		set_test_name("HTTP protocol: if application decides not to "
-			" finish the response (close), and the client is still there "
+		set_test_name("HTTP protocol: if application decides not to"
+			" finish the response (close), and the client is still there"
 			" we should send a 502 (which should log warn)");
 
 		init();
@@ -1143,5 +1175,63 @@ namespace tut {
 
 		string header = readResponseHeader();
 		ensure(containsSubstring(header, "HTTP/1.1 502"));
+	}
+
+	/***** Application connection non-instant connect *****/
+
+	TEST_METHOD(60) {
+		set_test_name("If app connection is not instantly established,"
+			" then it waits until establishment finishes");
+
+		init();
+		mockNextSession();
+		testSession.forceNonInstantConnect();
+
+		connectToServer();
+		sendRequest(
+			"GET /hello HTTP/1.1\r\n"
+			"Host: localhost\r\n"
+			"Connection: close\r\n"
+			"\r\n");
+		waitUntilSessionInitiated();
+
+		readPeerRequestHeader();
+		sendPeerResponse(
+			"HTTP/1.1 200 OK\r\n"
+			"Content-Type: text/plain\r\n"
+			"Content-Length: 2\r\n\r\n"
+			"ok");
+
+		waitUntilSessionClosed();
+		ensure("(1)", testSession.isSuccessful());
+	}
+
+	TEST_METHOD(61) {
+		set_test_name("If app connection establishment keeps timing out,"
+			" then it returns a 504 Gateway Timeout error");
+
+		init();
+		mockNextSession(Controller::MAX_SESSION_CHECKOUT_TRY);
+		testSession.forceNonInstantConnect();
+		controller->forceSessionSocketConnectTimeout = true;
+
+		connectToServer();
+		sendRequest(
+			"GET /hello HTTP/1.1\r\n"
+			"!~: \r\n"
+			"!~PASSENGER_APP_CONNECT_TIMEOUT: 1\r\n" // fast for EVENTUALLY timeout below
+			"!~: \r\n"
+			"Host: localhost\r\n"
+			"Connection: close\r\n"
+			"\r\n");
+
+		EVENTUALLY(5,
+			result = getRemainingMockedRequests() == 0;
+		);
+		// We'll want to assert that the Core Controller responds with a timeout error.
+		waitUntilSessionClosed();
+		ensure_not("(1)", testSession.isSuccessful());
+		string header = readResponseHeader();
+		ensure(containsSubstring(header, "HTTP/1.1 504 Gateway Timeout"));
 	}
 }

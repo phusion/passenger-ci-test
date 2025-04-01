@@ -465,6 +465,8 @@ Controller::onRequestBegin(Client *client, Request *req) {
 		req->startedAt = ev_now(getLoop());
 		req->bodyChannel.stop();
 
+		fillPoolOption(req, req->connectTimeout, "!~PASSENGER_APP_CONNECT_TIMEOUT");
+
 		initializeFlags(client, req, analysis);
 		if (respondFromTurboCache(client, req)) {
 			return;
