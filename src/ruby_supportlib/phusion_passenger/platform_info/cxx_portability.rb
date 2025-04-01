@@ -144,6 +144,10 @@ module PhusionPassenger
           # Avoids some compilaton warnings with Boost on Ubuntu 14.04.
           flags << "-Wno-unused-local-typedefs"
         end
+
+        if cxx_supports_wno_vla_cxx_extension_flag?
+          flags << "-Wno-vla-cxx-extension"
+        end
       else
         flags << debugging_cflags
       end

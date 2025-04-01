@@ -481,6 +481,13 @@ module PhusionPassenger
     end
     memoize :cxx_block_support_ok?, true
 
+    def self.cxx_supports_wno_vla_cxx_extension_flag?
+      return try_compile_with_warning_flag(
+        "Checking for C++ compiler '-Wno-vla-cxx-extension' support",
+        :cxx, '', '-Wno-vla-cxx-extension')
+    end
+    memoize :cxx_supports_wno_vla_cxx_extension_flag?, true
+
     # Returns whether compiling C++ with -fvisibility=hidden might result
     # in tons of useless warnings, like this:
     # http://code.google.com/p/phusion-passenger/issues/detail?id=526
