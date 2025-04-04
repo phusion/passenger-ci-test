@@ -1,4 +1,10 @@
-Release 6.0.27 (Not yet released)
+Release 6.1.0 (Not yet released)
+-------------
+ * 
+
+
+Release 6.0.27
+-------------
  * Upgrade Boost from 1.86 → 1.87.
  * Remove Passenger admin panel (Fuse).
  * Fix compilation on FreeBSD.
