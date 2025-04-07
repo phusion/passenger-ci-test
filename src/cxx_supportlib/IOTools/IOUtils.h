@@ -43,15 +43,14 @@ namespace Passenger {
 
 using namespace std;
 
+
+/****** Server address types support ******/
+
 enum ServerAddressType {
 	SAT_UNIX,
 	SAT_TCP,
 	SAT_UNKNOWN
 };
-
-typedef ssize_t (*WritevFunction)(int fildes, const struct iovec *iov, int iovcnt);
-
-bool purgeStdio(FILE *f);
 
 /**
  * Accepts a server address in one of the following formats, and returns which one it is:
@@ -95,30 +94,8 @@ void parseTcpSocketAddress(const StaticString & restrict_ref address,
  */
 bool isLocalSocketAddress(const StaticString &address);
 
-/**
- * Sets a socket in blocking mode.
- *
- * @throws SystemException Something went wrong.
- * @ingroup Support
- */
-void setBlocking(int fd);
 
-/**
- * Sets a socket in non-blocking mode.
- *
- * @throws SystemException Something went wrong.
- * @ingroup Support
- */
-void setNonBlocking(int fd);
-
-/**
- * Try to call the Linux accept4() system call. If the system call is
- * not available, then -1 is returned and errno is set to ENOSYS.
- */
-int callAccept4(int sock,
-	struct sockaddr * restrict addr,
-	socklen_t * restrict addr_len,
-	int options);
+/****** Server socket creation ******/
 
 /**
  * Create a new Unix or TCP server socket, depending on the address type.
@@ -139,7 +116,7 @@ int callAccept4(int sock,
  * @throws boost::thread_interrupted A system call has been interrupted.
  * @ingroup Support
  */
-int createServer(const StaticString &address,
+ int createServer(const StaticString &address,
 	unsigned int backlogSize = 0,
 	bool autoDelete = true,
 	const char *file = __FILE__,
@@ -191,6 +168,9 @@ int createTcpServer(const char *address = "0.0.0.0",
 	const char *file = __FILE__,
 	unsigned int line = __LINE__);
 
+
+/****** Socket connection establishment (blocking) ******/
+
 /**
  * Connect to a server at the given address in a blocking manner.
  *
@@ -206,7 +186,7 @@ int createTcpServer(const char *address = "0.0.0.0",
  * @throws boost::thread_interrupted A system call has been interrupted.
  * @ingroup Support
  */
-int connectToServer(const StaticString &address, const char *file,
+ int connectToServer(const StaticString &address, const char *file,
 	unsigned int line);
 
 /**
@@ -242,6 +222,8 @@ int connectToUnixServer(const StaticString &filename, const char *file,
 int connectToTcpServer(const StaticString &hostname, unsigned int port,
 	const char *file, unsigned int line);
 
+
+/****** Socket connection establishment (non-blocking) ******/
 
 /** State structure for non-blocking connectToUnixServer(). */
 struct NUnix_State {
@@ -374,6 +356,38 @@ public:
 	 */
 	FileDescriptor &getFd();
 };
+
+
+/****** Other ******/
+
+typedef ssize_t (*WritevFunction)(int fildes, const struct iovec *iov, int iovcnt);
+
+bool purgeStdio(FILE *f);
+
+/**
+ * Sets a socket in blocking mode.
+ *
+ * @throws SystemException Something went wrong.
+ * @ingroup Support
+ */
+void setBlocking(int fd);
+
+/**
+ * Sets a socket in non-blocking mode.
+ *
+ * @throws SystemException Something went wrong.
+ * @ingroup Support
+ */
+void setNonBlocking(int fd);
+
+/**
+ * Try to call the Linux accept4() system call. If the system call is
+ * not available, then -1 is returned and errno is set to ENOSYS.
+ */
+int callAccept4(int sock,
+	struct sockaddr * restrict addr,
+	socklen_t * restrict addr_len,
+	int options);
 
 /**
  * Checks whether the given TCP server is connectable. Because this check
