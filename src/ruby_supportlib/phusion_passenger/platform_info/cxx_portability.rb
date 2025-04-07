@@ -138,7 +138,7 @@ module PhusionPassenger
 
       if cc_or_cxx == :cxx
         flags << debugging_cxxflags
-        flags << cxx_11_flag if cxx_11_flag
+        flags << cxx_14_flag if cxx_14_flag
 
         if cxx_supports_wno_unused_local_typedefs_flag?
           # Avoids some compilaton warnings with Boost on Ubuntu 14.04.
@@ -192,7 +192,7 @@ module PhusionPassenger
 
     def self.portability_c_or_cxx_ldflags(cc_or_cxx)
       result = ''
-      result << cxx_11_flag if cc_or_cxx == :cxx && cxx_11_flag
+      result << cxx_14_flag if cc_or_cxx == :cxx && cxx_14_flag
       if os_name_simple == "solaris"
         result << ' -lxnet -lsocket -lnsl -lpthread'
       else

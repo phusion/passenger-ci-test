@@ -532,25 +532,21 @@ module PhusionPassenger
       end
     end
 
-    def self.cxx_11_flag
-      # C++11 support on FreeBSD 10.0 + Clang seems to be bugged.
-      # http://llvm.org/bugs/show_bug.cgi?id=18310
-      return nil if os_name_simple == "freebsd"
-
+    def self.cxx_14_flag
       source = %{
         struct Foo {
           Foo(Foo &&f) { }
         };
       }
-      if try_compile("Checking for C++ -std=gnu++11 compiler flag", :cxx, source, '-std=gnu++11')
-        return "-std=gnu++11"
-      elsif try_compile("Checking for C++ -std=c++11 compiler flag", :cxx, source, '-std=c++11')
-        return "-std=c++11"
+      if try_compile("Checking for C++ -std=gnu++14 compiler flag", :cxx, source, '-std=gnu++14')
+        return "-std=gnu++14"
+      elsif try_compile("Checking for C++ -std=c++14 compiler flag", :cxx, source, '-std=c++14')
+        return "-std=c++14"
       else
         return nil
       end
     end
-    memoize :cxx_11_flag, true
+    memoize :cxx_14_flag, true
 
     def self.has_rt_library?
       return try_link("Checking for -lrt support",
