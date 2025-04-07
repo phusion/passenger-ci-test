@@ -1,5 +1,6 @@
 Release 6.1.0 (Not yet released)
 -------------
+ * [Ruby] Fix compatibility with Rackup while maintaining compatibility with Rack 3. Closes GH-2602.
  * 
 
 
