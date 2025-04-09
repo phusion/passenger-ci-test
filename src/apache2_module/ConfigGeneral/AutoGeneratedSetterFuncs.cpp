@@ -99,6 +99,20 @@ cmd_passenger_anonymous_telemetry_proxy(cmd_parms *cmd, void *pcfg, const char *
 }
 
 static const char *
+cmd_passenger_app_connect_timeout(cmd_parms *cmd, void *pcfg, const char *arg) {
+	const char *err = ap_check_cmd_context(cmd, NOT_IN_FILES);
+	if (err != NULL) {
+		return err;
+	}
+
+	DirConfig *config = (DirConfig *) pcfg;
+	config->mAppConnectTimeoutSourceFile = cmd->directive->filename;
+	config->mAppConnectTimeoutSourceLine = cmd->directive->line_num;
+	config->mAppConnectTimeoutExplicitlySet = true;
+	return setIntConfig(cmd, arg, config->mAppConnectTimeout, 1);
+}
+
+static const char *
 cmd_passenger_app_env(cmd_parms *cmd, void *pcfg, const char *arg) {
 	const char *err = ap_check_cmd_context(cmd, NOT_IN_FILES);
 	if (err != NULL) {
