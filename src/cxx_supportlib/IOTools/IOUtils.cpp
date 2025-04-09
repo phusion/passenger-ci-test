@@ -86,18 +86,7 @@ using namespace oxt;
 static WritevFunction writevFunction = syscalls::writev;
 
 
-bool
-purgeStdio(FILE *f) {
-	#if defined(HAVE_FPURGE)
-		fpurge(f);
-		return true;
-	#elif defined(HAVE___FPURGE)
-		__fpurge(f);
-		return true;
-	#else
-		return false;
-	#endif
-}
+/****** Server address types support ******/
 
 ServerAddressType
 getSocketAddressType(const StaticString &address) {
@@ -182,67 +171,8 @@ isLocalSocketAddress(const StaticString &address) {
 	}
 }
 
-void
-setBlocking(int fd) {
-	int flags, ret;
 
-	do {
-		flags = fcntl(fd, F_GETFL);
-	} while (flags == -1 && errno == EINTR);
-	if (flags == -1) {
-		int e = errno;
-		throw SystemException("Cannot set socket to blocking mode: "
-			"cannot get socket flags",
-			e);
-	}
-	do {
-		ret = fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
-	} while (ret == -1 && errno == EINTR);
-	if (ret == -1) {
-		int e = errno;
-		throw SystemException("Cannot set socket to blocking mode: "
-			"cannot set socket flags",
-			e);
-	}
-}
-
-void
-setNonBlocking(int fd) {
-	int flags, ret;
-
-	do {
-		flags = fcntl(fd, F_GETFL);
-	} while (flags == -1 && errno == EINTR);
-	if (flags == -1) {
-		int e = errno;
-		throw SystemException("Cannot set socket to non-blocking mode: "
-			"cannot get socket flags",
-			e);
-	}
-	do {
-		ret = fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-	} while (ret == -1 && errno == EINTR);
-	if (ret == -1) {
-		int e = errno;
-		throw SystemException("Cannot set socket to non-blocking mode: "
-			"cannot set socket flags",
-			e);
-	}
-}
-
-int
-callAccept4(int sock, struct sockaddr *addr, socklen_t *addr_len, int options) {
-	#if defined(HAVE_ACCEPT4)
-		int ret;
-		do {
-			ret = ::accept4(sock, addr, addr_len, options);
-		} while (ret == -1 && errno == EINTR);
-		return ret;
-	#else
-		errno = ENOSYS;
-		return -1;
-	#endif
-}
+/****** Server socket creation ******/
 
 int
 createServer(const StaticString &address, unsigned int backlogSize, bool autoDelete,
@@ -408,6 +338,9 @@ createTcpServer(const char *address, unsigned short port, unsigned int backlogSi
 	return fd;
 }
 
+
+/****** Socket connection establishment (blocking) ******/
+
 int
 connectToServer(const StaticString &address, const char *file, unsigned int line) {
 	TRACE_POINT();
@@ -486,54 +419,6 @@ connectToUnixServer(const StaticString &filename, const char *file,
 	abort();   // Never reached.
 }
 
-void
-setupNonBlockingUnixSocket(NUnix_State &state, const StaticString &filename,
-	const char *file, unsigned int line)
-{
-	state.fd.assign(syscalls::socket(PF_UNIX, SOCK_STREAM, 0), file, line);
-	if (state.fd == -1) {
-		int e = errno;
-		throw SystemException("Cannot create a Unix socket file descriptor", e);
-	}
-
-	state.filename = filename;
-	setNonBlocking(state.fd);
-}
-
-bool
-connectToUnixServer(NUnix_State &state) {
-	struct sockaddr_un addr;
-	int ret;
-
-	if (state.filename.size() > sizeof(addr.sun_path) - 1) {
-		string message = "Cannot connect to Unix socket '";
-		message.append(state.filename.data(), state.filename.size());
-		message.append("': filename is too long.");
-		throw RuntimeException(message);
-	}
-
-	addr.sun_family = AF_UNIX;
-	memcpy(addr.sun_path, state.filename.data(), state.filename.size());
-	addr.sun_path[state.filename.size()] = '\0';
-
-	ret = syscalls::connect(state.fd, (const sockaddr *) &addr, sizeof(addr));
-	if (ret == -1) {
-		if (errno == EINPROGRESS || errno == EWOULDBLOCK) {
-			return false;
-		} else if (errno == EISCONN) {
-			return true;
-		} else {
-			int e = errno;
-			string message = "Cannot connect to Unix socket '";
-			message.append(state.filename.data(), state.filename.size());
-			message.append("'");
-			throw SystemException(message, e);
-		}
-	} else {
-		return true;
-	}
-}
-
 int
 connectToTcpServer(const StaticString &hostname, unsigned int port,
 	const char *file, unsigned int line)
@@ -589,6 +474,57 @@ connectToTcpServer(const StaticString &hostname, unsigned int port,
 	P_LOG_FILE_DESCRIPTOR_OPEN3(fd, file, line);
 
 	return fd;
+}
+
+
+/****** Socket connection establishment (non-blocking) ******/
+
+void
+setupNonBlockingUnixSocket(NUnix_State &state, const StaticString &filename,
+	const char *file, unsigned int line)
+{
+	state.fd.assign(syscalls::socket(PF_UNIX, SOCK_STREAM, 0), file, line);
+	if (state.fd == -1) {
+		int e = errno;
+		throw SystemException("Cannot create a Unix socket file descriptor", e);
+	}
+
+	state.filename = filename;
+	setNonBlocking(state.fd);
+}
+
+bool
+connectToUnixServer(NUnix_State &state) {
+	struct sockaddr_un addr;
+	int ret;
+
+	if (state.filename.size() > sizeof(addr.sun_path) - 1) {
+		string message = "Cannot connect to Unix socket '";
+		message.append(state.filename.data(), state.filename.size());
+		message.append("': filename is too long.");
+		throw RuntimeException(message);
+	}
+
+	addr.sun_family = AF_UNIX;
+	memcpy(addr.sun_path, state.filename.data(), state.filename.size());
+	addr.sun_path[state.filename.size()] = '\0';
+
+	ret = syscalls::connect(state.fd, (const sockaddr *) &addr, sizeof(addr));
+	if (ret == -1) {
+		if (errno == EINPROGRESS || errno == EWOULDBLOCK) {
+			return false;
+		} else if (errno == EISCONN) {
+			return true;
+		} else {
+			int e = errno;
+			string message = "Cannot connect to Unix socket '";
+			message.append(state.filename.data(), state.filename.size());
+			message.append("'");
+			throw SystemException(message, e);
+		}
+	} else {
+		return true;
+	}
 }
 
 void
@@ -717,6 +653,84 @@ NConnect_State::asNTCP_State() {
 	// 	P_BUG("Address type is not TCP");
 	// }
 	return s_tcp;
+}
+
+
+/****** Other ******/
+
+bool
+purgeStdio(FILE *f) {
+	#if defined(HAVE_FPURGE)
+		fpurge(f);
+		return true;
+	#elif defined(HAVE___FPURGE)
+		__fpurge(f);
+		return true;
+	#else
+		return false;
+	#endif
+}
+
+void
+setBlocking(int fd) {
+	int flags, ret;
+
+	do {
+		flags = fcntl(fd, F_GETFL);
+	} while (flags == -1 && errno == EINTR);
+	if (flags == -1) {
+		int e = errno;
+		throw SystemException("Cannot set socket to blocking mode: "
+			"cannot get socket flags",
+			e);
+	}
+	do {
+		ret = fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
+	} while (ret == -1 && errno == EINTR);
+	if (ret == -1) {
+		int e = errno;
+		throw SystemException("Cannot set socket to blocking mode: "
+			"cannot set socket flags",
+			e);
+	}
+}
+
+void
+setNonBlocking(int fd) {
+	int flags, ret;
+
+	do {
+		flags = fcntl(fd, F_GETFL);
+	} while (flags == -1 && errno == EINTR);
+	if (flags == -1) {
+		int e = errno;
+		throw SystemException("Cannot set socket to non-blocking mode: "
+			"cannot get socket flags",
+			e);
+	}
+	do {
+		ret = fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+	} while (ret == -1 && errno == EINTR);
+	if (ret == -1) {
+		int e = errno;
+		throw SystemException("Cannot set socket to non-blocking mode: "
+			"cannot set socket flags",
+			e);
+	}
+}
+
+int
+callAccept4(int sock, struct sockaddr *addr, socklen_t *addr_len, int options) {
+	#if defined(HAVE_ACCEPT4)
+		int ret;
+		do {
+			ret = ::accept4(sock, addr, addr_len, options);
+		} while (ret == -1 && errno == EINTR);
+		return ret;
+	#else
+		errno = ENOSYS;
+		return -1;
+	#endif
 }
 
 bool
