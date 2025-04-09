@@ -29,13 +29,7 @@
 #include <boost/move/move.hpp>
 #include <boost/config.hpp>
 #include <boost/cstdint.hpp>
-// for std::swap()
-#if __cplusplus >= 201103L
-	#include <utility>
-#else
-	#include <algorithm>
-#endif
-#include <limits>
+#include <utility>
 #include <cstring>
 #include <cassert>
 #include <cstddef>

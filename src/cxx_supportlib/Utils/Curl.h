@@ -47,12 +47,7 @@
  * don't do anything.
  */
 
-// for std::swap()
-#if __cplusplus >= 201103L
-	#include <utility>
-#else
-	#include <algorithm>
-#endif
+#include <utility>
 #include <string>
 #include <cstring>
 #include <curl/curl.h>

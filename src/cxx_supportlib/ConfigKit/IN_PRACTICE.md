@@ -333,12 +333,7 @@ DnsQuerier also logs its progress to a log file. This log file is opened during 
 This example demonstrates caching of configuration values, and it demonstrates how to perform arbitrary operations necessary for applying a configuration change (in this case, opening a new log file and closing the previous one).
 
 ~~~c++
-// for std::swap()
- #if __cplusplus >= 201103L
-     #include <utility>
- #else
-     #include <algorithm>
- #endif
+ #include <utility>
  #include <cstdio>
  #include <cstddef>
  #include <string>
@@ -495,12 +490,7 @@ However, a subclass may not rename the parent's config options, or remove any of
 The following example demonstrates HappyDnsQuerier: a DnsQuerier subclass that prints a configurable message whenever `query()` is called.
 
 ~~~c++
- // for std::swap()
- #if __cplusplus >= 201103L
-     #include <utility>
- #else
-     #include <algorithm>
- #endif
+ #include <utility>
  #include <iostream>
  #include <boost/config.hpp>
  #include <boost/scoped_ptr.hpp>

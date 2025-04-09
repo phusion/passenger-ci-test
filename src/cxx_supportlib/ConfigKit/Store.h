@@ -29,12 +29,7 @@
 #include <string>
 #include <vector>
 #include <cassert>
-// for std::swap()
-#if __cplusplus >= 201103L
-	#include <utility>
-#else
-	#include <algorithm>
-#endif
+#include <utility>
 #include <boost/config.hpp>
 
 #include <jsoncpp/json.h>

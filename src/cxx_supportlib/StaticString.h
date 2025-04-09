@@ -26,12 +26,7 @@
 #ifndef _PASSENGER_STATIC_STRING_H_
 #define _PASSENGER_STATIC_STRING_H_
 
-// for std::swap()
-#if __cplusplus >= 201103L
-	#include <utility>
-#else
-	#include <algorithm>
-#endif
+#include <utility>
 #include <boost/config.hpp>
 #include <oxt/macros.hpp>
 #include <sys/types.h>

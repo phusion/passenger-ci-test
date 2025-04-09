@@ -26,12 +26,7 @@
 #ifndef _PASSENGER_SERVER_KIT_CONFIG_H_
 #define _PASSENGER_SERVER_KIT_CONFIG_H_
 
-// for std::swap()
-#if __cplusplus >= 201103L
-	#include <utility>
-#else
-	#include <algorithm>
-#endif
+#include <utility>
 #include <string>
 #include <boost/config.hpp>
 #include <boost/scoped_ptr.hpp>
