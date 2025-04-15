@@ -29,6 +29,7 @@
 	// https://bugzilla.redhat.com/show_bug.cgi?id=165427
 	// Also needed for SO_PEERCRED.
 	#define _GNU_SOURCE
+#include <exception>
 #endif
 
 #include <oxt/system_calls.hpp>
@@ -215,7 +216,7 @@ createUnixServer(const StaticString &filename, unsigned int backlogSize, bool au
 		throw SystemException("Cannot create a Unix socket file descriptor", e);
 	}
 
-	FdGuard guard(fd, file, line, true);
+	FdGuard guard(fd, file, line);
 	addr.sun_family = AF_LOCAL;
 	strncpy(addr.sun_path, filename.c_str(), filename.size());
 	addr.sun_path[filename.size()] = '\0';
@@ -306,7 +307,7 @@ createTcpServer(const char *address, unsigned short port, unsigned int backlogSi
 	}
 	// Ignore SO_REUSEADDR error, it's not fatal.
 
-	FdGuard guard(fd, file, line, true);
+	FdGuard guard(fd, file, line);
 	if (family == AF_INET) {
 		ret = syscalls::bind(fd, (const struct sockaddr *) &addr.v4, sizeof(struct sockaddr_in));
 	} else {
@@ -369,7 +370,7 @@ connectToUnixServer(const StaticString &filename, const char *file,
 		throw SystemException("Cannot create a Unix socket file descriptor", e);
 	}
 
-	FdGuard guard(fd, file, line, true);
+	FdGuard guard(fd, file, line);
 	int ret;
 	struct sockaddr_un addr;
 
@@ -653,6 +654,72 @@ NConnect_State::asNTCP_State() {
 	// 	P_BUG("Address type is not TCP");
 	// }
 	return s_tcp;
+}
+
+
+/****** Scope guards ******/
+
+FdGuard::FdGuard(FdGuard &&other)
+	: mFd(other.mFd)
+{
+	other.mFd = -1;
+}
+
+FdGuard::FdGuard(int fd, const char *sourceFile, unsigned int sourceLine)
+	: mFd(fd)
+{
+	if (mFd != -1 && sourceFile != nullptr) {
+		P_LOG_FILE_DESCRIPTOR_OPEN3(fd, sourceFile, sourceLine);
+	}
+}
+
+FdGuard::~FdGuard() noexcept(false) {
+	if (mFd != -1) {
+		try {
+			safelyClose(mFd);
+		} catch (const std::exception &e) {
+			bool uncaughtException =
+				#if __cplusplus >= 201703L
+					std::uncaught_exceptions() > 0;
+				#else
+					std::uncaught_exception();
+				#endif
+			if (uncaughtException) {
+				P_WARN("Error closing file descriptor " << mFd << ": " << e.what());
+				return;
+			} else {
+				throw e;
+			}
+		}
+		P_LOG_FILE_DESCRIPTOR_CLOSE(mFd);
+	}
+}
+
+FdGuard &
+FdGuard::operator=(FdGuard &&other) {
+	if (this != &other) {
+		if (mFd != -1) {
+			safelyClose(mFd);
+			P_LOG_FILE_DESCRIPTOR_CLOSE(mFd);
+		}
+		mFd = other.mFd;
+		other.mFd = -1;
+	}
+	return *this;
+}
+
+void
+FdGuard::clear() noexcept {
+	mFd = -1;
+}
+
+void
+FdGuard::runNow() noexcept(false) {
+	if (mFd != -1) {
+		safelyClose(mFd);
+		P_LOG_FILE_DESCRIPTOR_CLOSE(mFd);
+		mFd = -1;
+	}
 }
 
 
