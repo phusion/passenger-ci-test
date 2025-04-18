@@ -517,7 +517,7 @@ createNonBlockingUnixSocketConnection(const StaticString &filename, const char *
 	}
 
 	int ret;
-	FdGuard guard(fd, nullptr, 0, true);
+	FdGuard guard(fd, nullptr, 0);
 	P_LOG_FILE_DESCRIPTOR_OPEN4(fd, file, line, "NonBlockingUnixSocketConnection");
 	setNonBlocking(fd);
 
@@ -575,7 +575,7 @@ createNonBlockingTcpSocketConnection(const StaticString &hostname, unsigned int 
 		throw SystemException("Cannot create a TCP socket file descriptor", e);
 	}
 
-	FdGuard guard(fd, nullptr, 0, true);
+	FdGuard guard(fd, nullptr, 0);
 	P_LOG_FILE_DESCRIPTOR_OPEN4(fd, file, line, "NonBlockingTcpSocketConnection");
 	setNonBlocking(fd);
 
@@ -763,7 +763,7 @@ pingTcpServer(const StaticString &host, unsigned int port, unsigned long long *t
 			throw e;
 		}
 	}
-	FdGuard guard(nbcResult.first, nullptr, 0, true);
+	FdGuard guard(nbcResult.first, nullptr, 0);
 	if (nbcResult.second) {
 		return true;
 	}
