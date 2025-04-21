@@ -40,10 +40,10 @@ jobs:
           ARCH_AND_OS: x86_64-unknown-linux-musl
           SCCACHE_AZURE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
 
-      - name: Setup library dependencies
-        run: >
-          sudo apt update &&
-          sudo apt install -y libcurl4-openssl-dev
+      - name: Setup dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y gdb libcurl4-openssl-dev
 
       - name: Setup misc
         run: |
@@ -55,17 +55,134 @@ jobs:
         run: bundle exec drake -j4 test:cxx:build
 
       - name: Run C++ tests
+        # The AbortHandler doesn't work so well on Github's Linux runners:
+        # - Triggering the original signal handler makes the runner freeze, so we force
+        #   terminate the process.
+        # - force killing the process may not work, so we enforce a low timeout to prevent
+        #   the test from haging for a long time. We enforce this primarily using the 'timeout'
+        #   command from coreutils instead of Github Actions' timeout, because the latter
+        #   could put the entire job in the "skipped" state and refuse to show logs.
+        timeout-minutes: 11
         run: >
           sudo env
           PATH="$PATH"
           GEM_PATH="$GEM_PATH"
+          PASSENGER_DUMP_CRASH_WATCH_TO_STDERR=true
+          PASSENGER_FORCE_TERMINATE_ON_ABORT=true
+          /usr/bin/timeout --signal KILL --verbose 600
           ../buildout/test/cxx/main
         working-directory: test
 
       - name: Archive logs
         uses: actions/upload-artifact@v4
         with:
-          name: cxx-test-logs-macos
+          name: cxx-test-logs-linux
+          path: 'buildout/testlogs/*'
+          if-no-files-found: ignore
+        if: '!cancelled()'
+
+      - name: Teardown sccache
+        run: ./dev/ci/teardown-sccache
+        if: '!cancelled()'
+
+  cxx-linux-valgrind:
+    name: C++ tests on Valgrind
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      USE_ASAN: false
+      EXTRA_CFLAGS: '-fdiagnostics-color'
+      EXTRA_CXXFLAGS: '-fdiagnostics-color'
+      SCCACHE_AZURE_BLOB_CONTAINER: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
+      SCCACHE_AZURE_KEY_PREFIX: sccache/cxx-ubuntu-valgrind
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Setup bundle gem path
+        run: ./dev/ci/setup-bundle-gem-path
+
+      - name: Setup sccache
+        run: ./dev/ci/setup-sccache
+        timeout-minutes: 1
+        env:
+          ARCH_AND_OS: x86_64-unknown-linux-musl
+          SCCACHE_AZURE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
+
+      - name: Setup dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y valgrind gdb libcurl4-openssl-dev
+
+      - name: Setup misc
+        run: |
+          set -x
+          sudo chmod 755 "$HOME"
+          cp test/config.json.github-ci-linux test/config.json
+
+      - name: Build C++ tests
+        run: bundle exec drake -j4 test:cxx:build
+
+      - name: Run C++ tests
+        timeout-minutes: 11
+        run: >
+          sudo env
+          PATH="$PATH"
+          GEM_PATH="$GEM_PATH"
+          PASSENGER_ABORT_HANDLER=false
+          /usr/bin/timeout --signal KILL --verbose 800
+          valgrind
+          --error-exitcode=1
+          --child-silent-after-fork=yes
+          --leak-check=full
+          --show-leak-kinds=definite
+          --errors-for-leak-kinds=none
+          --log-file=../valgrind.log.%p
+          ../buildout/test/cxx/main
+        working-directory: test
+
+      - name: Preprocess Valgrind logs
+        run: |
+          set -o pipefail
+          shopt -s nullglob
+
+          for LOGFILE in valgrind.log.*; do
+            # Remove PID prefixes
+            sed -E -i 's|^==[0-9]+== ||' "$LOGFILE"
+
+            # Delete all files containing only the Valgrind intro message.
+            # Don't take into account complaints about closeAllFileDescriptors()
+            # closing arbitrary file descriptors because the test suite spawns a
+            # lot of subprocesses that call that function first.
+            LINES=$(grep -vE 'invalid file descriptor .*? in syscall close|Use --log-fd' "$LOGFILE" | wc -l | awk '{ print $1 }')
+            if [[ "$LINES" -le 6 ]]; then
+              echo "Deleting $LOGFILE"
+              rm "$LOGFILE"
+            fi
+          done
+        if: '!cancelled()'
+
+      - name: Print Valgrind logs
+        run: |
+          shopt -s nullglob
+          for LOGFILE in valgrind.log.*; do
+            ERROR_SUMMARY=$(grep 'ERROR SUMMARY' "$LOGFILE" | cut -d':' -f2-)
+            echo "::group::${LOGFILE} — ${ERROR_SUMMARY}"
+            cat "$LOGFILE"
+            echo "::endgroup::"
+          done
+        if: '!cancelled()'
+
+      - name: Archive logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxx-test-logs-valgrind
           path: 'buildout/testlogs/*'
           if-no-files-found: ignore
         if: '!cancelled()'
@@ -116,18 +233,17 @@ jobs:
 
       - name: Run C++ tests
         # The AbortHandler doesn't work so well on Github's macOS runners:
-        # - crash-watch invocation freezes the runner, so we disable this.
         # - resuming the parent process after SIGSTOP doesn't work, so we force kill the parent.
         # - force killing the parent may not work, so we enforce a low timeout to prevent
         #   the test from haging for a long time. We enforce this primarily using the 'timeout'
-        #   command from coreutils instead of Github Actions' timeout,  because the latter
+        #   command from coreutils instead of Github Actions' timeout, because the latter
         #   could put the entire job in the "skipped" state and refuse to show logs.
         timeout-minutes: 11
         run: >
           sudo env
           PATH="$PATH"
           GEM_PATH="$GEM_PATH"
-          PASSENGER_DUMP_WITH_CRASH_WATCH=false
+          PASSENGER_DUMP_CRASH_WATCH_TO_STDERR=true
           PASSENGER_FORCE_TERMINATE_ON_ABORT=true
           gtimeout --signal KILL --verbose 600
           ../buildout/test/cxx/main
@@ -200,8 +316,8 @@ jobs:
           sed "s|_USER_|$(whoami)|; s|_SOURCE_ROOT_|$(pwd)|" ${{ matrix.config_file }} > test/config.json
 
       - name: Setup Linux dependencies
-        run: >
-          sudo apt update &&
+        run: |
+          sudo apt update
           sudo apt install -y libcurl4-openssl-dev apache2-dev libapr1-dev libaprutil1-dev
         if: matrix.name == 'Linux'
 
@@ -349,8 +465,8 @@ jobs:
           sed "s|_USER_|$(whoami)|" ${{ matrix.config_file }} > test/config.json
 
       - name: Setup Linux dependencies
-        run: >
-          sudo apt update &&
+        run: |
+          sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
 
@@ -424,8 +540,8 @@ jobs:
           SCCACHE_AZURE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
 
       - name: Setup Linux dependencies
-        run: >
-          sudo apt update &&
+        run: |
+          sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
 
@@ -500,8 +616,8 @@ jobs:
           SCCACHE_AZURE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
 
       - name: Setup Linux dependencies
-        run: >
-          sudo apt update &&
+        run: |
+          sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
 
@@ -565,8 +681,8 @@ jobs:
           sed "s|_USER_|$(whoami)|" ${{ matrix.config_file }} > test/config.json
 
       - name: Setup Linux dependencies
-        run: >
-          sudo apt update &&
+        run: |
+          sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
 
