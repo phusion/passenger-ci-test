@@ -14,7 +14,7 @@ jobs:
   cxx-linux:
     name: C++ tests on Linux
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 10
     env:
       EXTRA_CFLAGS: '-fdiagnostics-color'
       EXTRA_CXXFLAGS: '-fdiagnostics-color'
@@ -22,10 +22,12 @@ jobs:
       SCCACHE_AZURE_KEY_PREFIX: sccache/cxx-ubuntu
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
@@ -44,6 +46,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y gdb libcurl4-openssl-dev
+        timeout-minutes: 1
 
       - name: Setup misc
         run: |
@@ -53,6 +56,7 @@ jobs:
 
       - name: Build C++ tests
         run: bundle exec drake -j4 test:cxx:build
+        timeout-minutes: 5
 
       - name: Run C++ tests
         # The AbortHandler doesn't work so well on Github's Linux runners:
@@ -62,15 +66,15 @@ jobs:
         #   the test from haging for a long time. We enforce this primarily using the 'timeout'
         #   command from coreutils instead of Github Actions' timeout, because the latter
         #   could put the entire job in the "skipped" state and refuse to show logs.
-        timeout-minutes: 11
         run: >
           sudo env
           PATH="$PATH"
           GEM_PATH="$GEM_PATH"
           PASSENGER_DUMP_CRASH_WATCH_TO_STDERR=true
           PASSENGER_FORCE_TERMINATE_ON_ABORT=true
-          /usr/bin/timeout --signal KILL --verbose 600
+          /usr/bin/timeout --signal KILL --verbose 540
           ../buildout/test/cxx/main
+        timeout-minutes: 10
         working-directory: test
 
       - name: Archive logs
@@ -88,7 +92,7 @@ jobs:
   cxx-linux-valgrind:
     name: C++ tests on Valgrind
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 10
     env:
       USE_ASAN: false
       EXTRA_CFLAGS: '-fdiagnostics-color'
@@ -97,10 +101,12 @@ jobs:
       SCCACHE_AZURE_KEY_PREFIX: sccache/cxx-ubuntu-valgrind
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
@@ -119,6 +125,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y valgrind gdb libcurl4-openssl-dev
+        timeout-minutes: 1
 
       - name: Setup misc
         run: |
@@ -128,15 +135,15 @@ jobs:
 
       - name: Build C++ tests
         run: bundle exec drake -j4 test:cxx:build
+        timeout-minutes: 5
 
       - name: Run C++ tests
-        timeout-minutes: 11
         run: >
           sudo env
           PATH="$PATH"
           GEM_PATH="$GEM_PATH"
           PASSENGER_ABORT_HANDLER=false
-          /usr/bin/timeout --signal KILL --verbose 800
+          /usr/bin/timeout --signal KILL --verbose 540
           valgrind
           --error-exitcode=1
           --child-silent-after-fork=yes
@@ -145,6 +152,7 @@ jobs:
           --errors-for-leak-kinds=none
           --log-file=../valgrind.log.%p
           ../buildout/test/cxx/main
+        timeout-minutes: 10
         working-directory: test
 
       - name: Preprocess Valgrind logs
@@ -194,7 +202,7 @@ jobs:
   cxx-macos:
     name: C++ tests on macOS
     runs-on: macos-14
-    timeout-minutes: 30
+    timeout-minutes: 10
     env:
       EXTRA_CFLAGS: '-I/opt/homebrew/opt/openssl@3/include -fcolor-diagnostics'
       EXTRA_CXXFLAGS: '-I/opt/homebrew/opt/openssl@3/include -fcolor-diagnostics'
@@ -202,10 +210,12 @@ jobs:
       SCCACHE_AZURE_KEY_PREFIX: sccache/cxx-macos-14-arm
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
@@ -222,6 +232,7 @@ jobs:
 
       - name: Setup dependencies
         run: brew install coreutils
+        timeout-minutes: 1
 
       - name: Setup misc
         run: |
@@ -230,6 +241,7 @@ jobs:
 
       - name: Build C++ tests
         run: bundle exec drake -j4 test:cxx:build
+        timeout-minutes: 5
 
       - name: Run C++ tests
         # The AbortHandler doesn't work so well on Github's macOS runners:
@@ -238,15 +250,15 @@ jobs:
         #   the test from haging for a long time. We enforce this primarily using the 'timeout'
         #   command from coreutils instead of Github Actions' timeout, because the latter
         #   could put the entire job in the "skipped" state and refuse to show logs.
-        timeout-minutes: 11
         run: >
           sudo env
           PATH="$PATH"
           GEM_PATH="$GEM_PATH"
           PASSENGER_DUMP_CRASH_WATCH_TO_STDERR=true
           PASSENGER_FORCE_TERMINATE_ON_ABORT=true
-          gtimeout --signal KILL --verbose 600
+          gtimeout --signal KILL --verbose 540
           ../buildout/test/cxx/main
+        timeout-minutes: 10
         working-directory: test
 
       - name: Archive logs
@@ -285,6 +297,7 @@ jobs:
             sccache_arch_and_os: aarch64-apple-darwin
             sccache_azure_key_prefix: sccache/cxx-macos-14-arm
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     env:
       EXTRA_CFLAGS: ${{ matrix.extra_cflags }}
       EXTRA_CXXFLAGS: ${{ matrix.extra_cflags }}
@@ -294,15 +307,18 @@ jobs:
       SCCACHE_CACHE_MULTIARCH: true
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
 
       - uses: actions/setup-node@v4
+        timeout-minutes: 1
         with:
           node-version: 18
           cache: npm
@@ -320,6 +336,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev apache2-dev libapr1-dev libaprutil1-dev
         if: matrix.name == 'Linux'
+        timeout-minutes: 1
 
       - name: Setup macOS code signing
         run: |
@@ -340,6 +357,8 @@ jobs:
           security add-trusted-cert -d -r trustRoot -k mykeychain.keychain github-ci.crt
           security list-keychain -d user -s mykeychain.keychain
         if: matrix.name == 'macOS'
+        # Sometimes `security add-trusted-cert` freezes indefinitelyl
+        timeout-minutes: 1
         env:
           OPENSSL_CONFIG: |
             [ req ]
@@ -364,6 +383,7 @@ jobs:
           echo 127.0.0.1 7.passenger.test 8.passenger.test 9.passenger.test | sudo tee -a /etc/hosts
 
       - run: npm ci
+        timeout-minutes: 2
 
 
       - name: Setup sccache
@@ -375,6 +395,7 @@ jobs:
 
       - name: Test module installation as normal user
         run: ./bin/passenger-install-apache2-module --auto --force-colors
+        timeout-minutes: 5
 
       - name: Teardown sccache
         run: ./dev/ci/teardown-sccache
@@ -391,6 +412,7 @@ jobs:
 
       - name: Test module installation as root
         run: sudo -E ./bin/passenger-install-apache2-module --auto --force-colors --no-compile
+        timeout-minutes: 1
 
       - name: Teardown sccache as root
         run: ./dev/ci/teardown-sccache
@@ -401,6 +423,7 @@ jobs:
 
       - name: Integration tests
         run: bundle exec rake test:integration:apache2
+        timeout-minutes: 2
 
       - name: Archive logs
         uses: actions/upload-artifact@v4
@@ -436,15 +459,18 @@ jobs:
       SCCACHE_AZURE_KEY_PREFIX: ${{ matrix.sccache_azure_key_prefix }}
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
 
       - uses: actions/setup-node@v4
+        timeout-minutes: 1
         with:
           node-version: 18
           cache: npm
@@ -469,6 +495,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
+        timeout-minutes: 1
 
       - name: Setup hosts entries
         run: |
@@ -478,12 +505,15 @@ jobs:
           echo 127.0.0.1 7.passenger.test 8.passenger.test 9.passenger.test | sudo tee -a /etc/hosts
 
       - run: npm ci
+        timeout-minutes: 2
 
       - name: Test installation
         run: ./bin/passenger-install-nginx-module --auto --force-colors --prefix=/tmp/nginx --auto-download
+        timeout-minutes: 5
 
       - name: Integration tests
         run: bundle exec rake test:integration:nginx
+        timeout-minutes: 2
 
       - name: Archive logs
         uses: actions/upload-artifact@v4
@@ -521,10 +551,12 @@ jobs:
       SCCACHE_AZURE_KEY_PREFIX: ${{ matrix.sccache_azure_key_prefix }}
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
@@ -544,6 +576,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
+        timeout-minutes: 1
 
       - name: Setup parameters
         run: |
@@ -554,19 +587,24 @@ jobs:
 
       - name: Compile module
         run: bundle exec drake -j4 nginx:as_dynamic_module
+        timeout-minutes: 5
 
       - name: Download Nginx source
         run: curl -sSLO "https://www.nginx.org/download/nginx-$TEST_DYNAMIC_WITH_NGINX_VERSION.tar.gz"
+        timeout-minutes: 1
 
       - name: Extract Nginx source
         run: tar -xzf "nginx-$TEST_DYNAMIC_WITH_NGINX_VERSION.tar.gz"
+        timeout-minutes: 1
 
       - name: Configure Nginx source
         run: ./configure --with-cc-opt='-Wno-error' --add-dynamic-module="$NGINX_ADDON_DIR"
+        timeout-minutes: 1
         working-directory: "nginx-${{ env.TEST_DYNAMIC_WITH_NGINX_VERSION }}"
 
       - name: Compile Nginx with dynamic module
         run: make -j4
+        timeout-minutes: 2
         working-directory: "nginx-${{ env.TEST_DYNAMIC_WITH_NGINX_VERSION }}"
 
       - name: Teardown sccache
@@ -590,6 +628,7 @@ jobs:
             sccache_arch_and_os: aarch64-apple-darwin
             sccache_azure_key_prefix: sccache/cxx-macos-14-arm
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     env:
       EXTRA_CFLAGS: ${{ matrix.extra_cflags }}
       EXTRA_CXXFLAGS: ${{ matrix.extra_cflags }}
@@ -597,10 +636,12 @@ jobs:
       SCCACHE_AZURE_KEY_PREFIX: ${{ matrix.sccache_azure_key_prefix }}
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
@@ -620,12 +661,15 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
+        timeout-minutes: 1
 
       - name: Compile prerequisites
         run: bundle exec drake -j4 nginx
+        timeout-minutes: 5
 
       - name: Integration test
         run: bundle exec drake -j4 test:integration:standalone
+        timeout-minutes: 8
 
       - name: Teardown sccache
         run: ./dev/ci/teardown-sccache
@@ -650,6 +694,7 @@ jobs:
             sccache_arch_and_os: aarch64-apple-darwin
             sccache_azure_key_prefix: sccache/cxx-macos-14-arm
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     env:
       EXTRA_CFLAGS: ${{ matrix.extra_cflags }}
       EXTRA_CXXFLAGS: ${{ matrix.extra_cflags }}
@@ -657,10 +702,12 @@ jobs:
       SCCACHE_AZURE_KEY_PREFIX: ${{ matrix.sccache_azure_key_prefix }}
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
@@ -685,12 +732,15 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
+        timeout-minutes: 1
 
       - name: Compile
         run: bundle exec drake -j4 agent
+        timeout-minutes: 5
 
       - name: Test
         run: bundle exec rake test:ruby
+        timeout-minutes: 2
 
       - name: Teardown sccache
         run: ./dev/ci/teardown-sccache
@@ -709,15 +759,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
 
       - uses: actions/setup-node@v4
+        timeout-minutes: 1
         with:
           node-version: 18
           cache: npm
@@ -726,19 +779,24 @@ jobs:
         run: ./dev/ci/setup-bundle-gem-path
 
       - run: npm ci
+        timeout-minutes: 2
 
       - name: Test
         run: bundle exec rake test:node
+        timeout-minutes: 2
 
   homebrew_packaging:
     name: Homebrew packaging tests
     runs-on: macos-14
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
@@ -748,12 +806,14 @@ jobs:
 
       - name: Create tarball
         run: bundle exec rake package:set_official package:tarball
+        timeout-minutes: 1
 
       - name: Check whether formula is up-to-date
         run: >
           ./packaging/homebrew/verify-oss-formula-uptodate
           -c homebrew-core.git
           -r upstream
+        timeout-minutes: 5
 
       - name: Modify formula
         run: >
@@ -762,6 +822,7 @@ jobs:
           --formula packaging/homebrew/Formula/passenger.rb
           --tarball pkg/*.tar.gz
           --output pkg/passenger.rb
+        timeout-minutes: 1
 
       - name: Test formula
         run: >
@@ -769,16 +830,20 @@ jobs:
           -p .
           -f pkg/passenger.rb
           -t pkg/*.tar.gz
+        timeout-minutes: 6
 
   source_packaging:
     name: Source packaging tests
     runs-on: ubuntu-24.04
+    timeout-minutes: 2
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 1
         with:
           submodules: true
 
       - uses: ruby/setup-ruby@v1
+        timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
@@ -788,3 +853,4 @@ jobs:
 
       - name: Test
         run: bundle exec rake test:source_packaging
+        timeout-minutes: 1
