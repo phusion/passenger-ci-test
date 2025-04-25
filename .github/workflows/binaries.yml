@@ -84,7 +84,6 @@ jobs:
         working-directory: packaging/binaries/linux
 
   build_macos:
-    timeout-minutes: 30
     name: Binaries macOS ${{ matrix.arch }}
     strategy:
       fail-fast: false
