@@ -262,6 +262,7 @@ jobs:
         if: '!cancelled()'
 
   apache2:
+    timeout-minutes: 30
     name: "Apache2 tests on ${{ matrix.name }}"
     strategy:
       fail-fast: false
@@ -411,6 +412,7 @@ jobs:
         if: '!cancelled()'
 
   nginx:
+    timeout-minutes: 30
     name: "Nginx tests on ${{ matrix.name }}"
     strategy:
       fail-fast: false
@@ -498,6 +500,7 @@ jobs:
         if: '!cancelled()'
 
   nginx_dynamic:
+    timeout-minutes: 30
     name: "Nginx dynamic module tests on ${{ matrix.name }}"
     strategy:
       fail-fast: false
@@ -574,6 +577,7 @@ jobs:
         if: '!cancelled()'
 
   standalone:
+    timeout-minutes: 30
     name: "Passenger Standalone tests on ${{ matrix.name }}"
     strategy:
       fail-fast: false
@@ -632,6 +636,7 @@ jobs:
         if: '!cancelled()'
 
   ruby:
+    timeout-minutes: 30
     name: "Ruby tests on ${{ matrix.name }}"
     strategy:
       fail-fast: false
@@ -697,6 +702,7 @@ jobs:
         if: '!cancelled()'
 
   nodejs:
+    timeout-minutes: 30
     name: "Node.js tests on ${{ matrix.name }}"
     strategy:
       fail-fast: false
@@ -731,6 +737,7 @@ jobs:
         run: bundle exec rake test:node
 
   homebrew_packaging:
+    timeout-minutes: 30
     name: Homebrew packaging tests
     runs-on: macos-14
     steps:
