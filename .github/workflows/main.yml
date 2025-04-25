@@ -46,7 +46,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y gdb libcurl4-openssl-dev
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup misc
         run: |
@@ -125,7 +125,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y valgrind gdb libcurl4-openssl-dev
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup misc
         run: |
@@ -336,7 +336,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev apache2-dev libapr1-dev libaprutil1-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup macOS code signing
         run: |
@@ -495,7 +495,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup hosts entries
         run: |
@@ -576,7 +576,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup parameters
         run: |
@@ -661,7 +661,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Compile prerequisites
         run: bundle exec drake -j4 nginx
@@ -732,7 +732,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Compile
         run: bundle exec drake -j4 agent
