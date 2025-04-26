@@ -397,7 +397,7 @@ jobs:
           SCCACHE_AZURE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
 
       - name: Test module installation as normal user
-        run: ./bin/passenger-install-apache2-module --auto --force-colors
+        run: ./bin/passenger-install-apache2-module --auto --force-colors --rake-command 'bundle exec drake -j4'
         timeout-minutes: 5
 
       - name: Teardown sccache
@@ -511,7 +511,14 @@ jobs:
         timeout-minutes: 2
 
       - name: Test installation
-        run: ./bin/passenger-install-nginx-module --auto --force-colors --prefix=/tmp/nginx --auto-download
+        run: >
+          ./bin/passenger-install-nginx-module
+          --auto
+          --force-colors
+          --prefix=/tmp/nginx
+          --auto-download
+          --rake-command 'bundle exec drake -j4'
+          --make-concurrency 4
         timeout-minutes: 5
 
       - name: Integration tests
