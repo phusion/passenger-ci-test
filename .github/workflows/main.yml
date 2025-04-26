@@ -343,18 +343,21 @@ jobs:
           exec 2>&1
           set -x
 
+          # Create certificate
           echo "$OPENSSL_CONFIG" > cert_config.cnf
           openssl req -new -newkey rsa:2048 -nodes -keyout github-ci.key -out github-ci.csr -config cert_config.cnf
           openssl x509 -req -in github-ci.csr -signkey github-ci.key -out github-ci.crt -days 3650 -extensions req_ext -extfile cert_config.cnf
 
+          # Throw-away keychain
           sudo security authorizationdb write com.apple.trust-settings.admin allow
           security create-keychain -p mypassword mykeychain.keychain
           security set-keychain-settings -lut 21600 mykeychain.keychain
           security unlock-keychain -p mypassword mykeychain.keychain
 
+          # Import & trust key
           security import github-ci.key -k mykeychain.keychain -A
           security set-key-partition-list -S apple-tool:,apple: -k mypassword mykeychain.keychain
-          security add-trusted-cert -d -r trustRoot -k mykeychain.keychain github-ci.crt
+          sudo security add-trusted-cert -d -r trustRoot -k mykeychain.keychain github-ci.crt
           security list-keychain -d user -s mykeychain.keychain
         if: matrix.name == 'macOS'
         # Sometimes `security add-trusted-cert` freezes indefinitelyl
