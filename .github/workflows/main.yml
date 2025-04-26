@@ -46,7 +46,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y gdb libcurl4-openssl-dev
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup misc
         run: |
@@ -125,7 +125,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y valgrind gdb libcurl4-openssl-dev
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup misc
         run: |
@@ -336,25 +336,28 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev apache2-dev libapr1-dev libaprutil1-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup macOS code signing
         run: |
           exec 2>&1
           set -x
 
+          # Create certificate
           echo "$OPENSSL_CONFIG" > cert_config.cnf
           openssl req -new -newkey rsa:2048 -nodes -keyout github-ci.key -out github-ci.csr -config cert_config.cnf
           openssl x509 -req -in github-ci.csr -signkey github-ci.key -out github-ci.crt -days 3650 -extensions req_ext -extfile cert_config.cnf
 
+          # Throw-away keychain
           sudo security authorizationdb write com.apple.trust-settings.admin allow
           security create-keychain -p mypassword mykeychain.keychain
           security set-keychain-settings -lut 21600 mykeychain.keychain
           security unlock-keychain -p mypassword mykeychain.keychain
 
+          # Import & trust key
           security import github-ci.key -k mykeychain.keychain -A
           security set-key-partition-list -S apple-tool:,apple: -k mypassword mykeychain.keychain
-          security add-trusted-cert -d -r trustRoot -k mykeychain.keychain github-ci.crt
+          sudo security add-trusted-cert -d -r trustRoot -k mykeychain.keychain github-ci.crt
           security list-keychain -d user -s mykeychain.keychain
         if: matrix.name == 'macOS'
         # Sometimes `security add-trusted-cert` freezes indefinitelyl
@@ -394,7 +397,7 @@ jobs:
           SCCACHE_AZURE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
 
       - name: Test module installation as normal user
-        run: ./bin/passenger-install-apache2-module --auto --force-colors
+        run: ./bin/passenger-install-apache2-module --auto --force-colors --rake-command 'bundle exec drake -j4'
         timeout-minutes: 5
 
       - name: Teardown sccache
@@ -495,7 +498,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup hosts entries
         run: |
@@ -508,7 +511,14 @@ jobs:
         timeout-minutes: 2
 
       - name: Test installation
-        run: ./bin/passenger-install-nginx-module --auto --force-colors --prefix=/tmp/nginx --auto-download
+        run: >
+          ./bin/passenger-install-nginx-module
+          --auto
+          --force-colors
+          --prefix=/tmp/nginx
+          --auto-download
+          --rake-command 'bundle exec drake -j4'
+          --make-concurrency 4
         timeout-minutes: 5
 
       - name: Integration tests
@@ -576,7 +586,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Setup parameters
         run: |
@@ -661,7 +671,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Compile prerequisites
         run: bundle exec drake -j4 nginx
@@ -732,7 +742,7 @@ jobs:
           sudo apt update
           sudo apt install -y libcurl4-openssl-dev
         if: matrix.name == 'Linux'
-        timeout-minutes: 1
+        timeout-minutes: 2
 
       - name: Compile
         run: bundle exec drake -j4 agent

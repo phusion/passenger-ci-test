@@ -98,10 +98,12 @@ jobs:
       matrix:
         include:
           - runner: macos-13
+            os: macos-13
             arch: x86_64
             sccache_arch_and_os: x86_64-apple-darwin
             sccache_azure_key_prefix: sccache/cxx-macos-13-x86_64
           - runner: macos-14
+            os: macos-14
             arch: arm64
             sccache_arch_and_os: aarch64-apple-darwin
             sccache_azure_key_prefix: sccache/cxx-macos-14-arm
@@ -138,7 +140,7 @@ jobs:
         timeout-minutes: 2
         env:
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
-          BLOB_NAME: "binaries/rvm-${{ hashFiles('packaging/binaries/shared/definitions/ruby_versions') }}-${{ matrix.runner }}-${{ matrix.arch }}.tar.zstd"
+          BLOB_NAME: "binaries/rvm-${{ hashFiles('packaging/binaries/shared/definitions/ruby_versions') }}-${{ matrix.os }}-${{ matrix.arch }}.tar.zstd"
 
       - name: Install RVM
         run: set -o pipefail && curl -fsSL https://get.rvm.io/stable | bash
@@ -160,7 +162,7 @@ jobs:
         timeout-minutes: 2
         env:
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
-          BLOB_NAME: "binaries/rvm-${{ hashFiles('packaging/binaries/shared/definitions/ruby_versions') }}-${{ matrix.runner }}-${{ matrix.arch }}.tar.zstd"
+          BLOB_NAME: "binaries/rvm-${{ hashFiles('packaging/binaries/shared/definitions/ruby_versions') }}-${{ matrix.os }}-${{ matrix.arch }}.tar.zstd"
 
 
       - name: Setup sccache
@@ -177,7 +179,7 @@ jobs:
         timeout-minutes: 2
         env:
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
-          BLOB_NAME: binaries/macos-runtime-${{ steps.determine_runtime_version.outputs.version }}-${{ matrix.runner }}-${{ matrix.arch }}.tar.zstd
+          BLOB_NAME: binaries/macos-runtime-${{ steps.determine_runtime_version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}.tar.zstd
           CACHE_PATH: packaging/binaries/macos/runtime-output
 
       - name: Compile runtime
@@ -192,7 +194,7 @@ jobs:
         timeout-minutes: 2
         env:
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
-          BLOB_NAME: binaries/macos-runtime-${{ steps.determine_runtime_version.outputs.version }}-${{ matrix.runner }}-${{ matrix.arch }}.tar.zstd
+          BLOB_NAME: binaries/macos-runtime-${{ steps.determine_runtime_version.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}.tar.zstd
           CACHE_PATH: packaging/binaries/macos/runtime-output
 
 
