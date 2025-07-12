@@ -40,7 +40,6 @@
 #include <ConfigKit/TableTranslator.h>
 #include <ConfigKit/PrefixTranslator.h>
 #include <ServerKit/Context.h>
-#include <ServerKit/llversion.h>
 #include <ServerKit/HttpServer.h>
 #include <WrapperRegistry/Registry.h>
 #include <Core/Controller/Config.h>
@@ -353,10 +352,6 @@ private:
 
 		Json::Value updates;
 		updates["server_software"] = serverSoftware;
-		if (effectiveValues["integration_mode"].asString() == "standalone" &&
-			effectiveValues["standalone_engine"].asString()=="builtin") {
-			updates["web_server_version"] = llhttp_version();
-		}
 		return updates;
 	}
 
