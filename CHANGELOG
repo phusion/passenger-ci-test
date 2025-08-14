@@ -4,6 +4,7 @@ Release 6.1.0 (Not yet released)
  * A C++14 compiler is now required to compile Passenger.
  * Add rpm packages for EL10 (RHEL, Rocky, Alma).
  * [Standalone] Fixes security update checker with builtin engine.
+ * [Debian] Add Debian 13 Trixie packages. Closes GH-2622.
 
 
 Release 6.0.27
