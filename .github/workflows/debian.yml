@@ -46,6 +46,13 @@ jobs:
         with:
           submodules: true
 
+      # backport trixie data to ubuntu noble runner
+      - run: |
+          echo -e 'Package: distro-info-data\nPin: release n=questing\nPin-Priority: 990\n\nPackage: *\nPin: release n=noble\nPin-Priority: 900\n\nPackage: *\nPin: release o=Ubuntu\nPin-Priority: -10\n' >> /etc/apt/preferences
+          sed -e 's/noble/questing/g' /etc/apt/sources.list.d/ubuntu.sources | sudo tee -a /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt update
+          sudo apt upgrade -y distro-info-data
+
       - run: mkdir work cache output
 
       - name: Fetch cache
