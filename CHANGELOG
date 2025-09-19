@@ -2,6 +2,7 @@ Release 6.1.1 (Not yet released)
 -------------
  * Upgrade Boost from 1.87 → 1.89.
  * [Nginx] Upgrades preferred Nginx to 1.28.0 from 1.26.3.
+ * [Nginx] The preferred PCRE2 version is now 10.46 (previously 10.45).
 
 
 Release 6.1.0
