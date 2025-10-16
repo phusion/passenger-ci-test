@@ -1,5 +1,6 @@
 Release 6.1.1 (Not yet released)
 -------------
+ * [Ubuntu] Add packages for Ubuntu 25.10 "questing", remove packages for Ubuntu 25.04 "plucky".
  * Upgrade Boost from 1.87 -> 1.89.
  * [Nginx] Upgrades preferred Nginx to 1.28.0 from 1.26.3.
  * [Nginx] The preferred PCRE2 version is now 10.46 (previously 10.45).
@@ -31,6 +32,7 @@ Release 6.1.0
  * Add rpm packages for EL10 (RHEL, Rocky, Alma).
  * [Standalone] Fixes security update checker with builtin engine.
  * [Debian] Add Debian 13 Trixie packages. Closes GH-2622.
+ * [Ubuntu] Add packages for Ubuntu 25.04 "plucky".
 
 
 Release 6.0.27
