@@ -46,7 +46,7 @@ end
 
 desc "Install developer dependencies"
 task 'test:install_deps' do
-  gem_install = PlatformInfo.gem_command + " install --no-rdoc --no-ri"
+  gem_install = PlatformInfo.gem_command + " install --no-document"
   gem_install = "#{PlatformInfo.ruby_sudo_command} #{gem_install}" if boolean_option('SUDO')
   default = boolean_option('DEVDEPS_DEFAULT', true)
   install_base_deps = boolean_option('BASE_DEPS', default)
