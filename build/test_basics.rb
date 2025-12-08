@@ -87,9 +87,9 @@ def bundler_version
 end
 
 def bundler_too_old?
-  Gem::Version.new(bundler_version) < Gem::Version.new("1.1.10")
+  bundler_version < Gem::Version.new("1.1.10")
 end
 
 def bundler_too_new?
-  Gem::Version.new(bundler_version) >= Gem::Version.new("2.1.0")
+  bundler_version >= Gem::Version.new("2.1.0")
 end
