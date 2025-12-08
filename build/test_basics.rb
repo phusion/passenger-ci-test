@@ -82,6 +82,7 @@ end
 
 def bundler_version
   `bundle --version` =~ /version (.+)/
+  `gem info --quiet --remote --exact bundler`.lines.first =~ /bundler \((.+)\)/ if $1.nil?
   Gem::Version.new($1)
 end
 

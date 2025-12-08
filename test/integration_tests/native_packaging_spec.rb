@@ -34,17 +34,7 @@ end
 # Clean Bundler environment variables. We don't want to start Passenger Standalone
 # with Bundler.
 if defined?(Bundler)
-  clean_env = nil
-  if Bundler.method_defined?(:with_unbundled_env)
-    Bundler.with_unbundled_env do
-      clean_env = ENV.to_hash
-    end
-  else
-    Bundler.with_clean_env do
-      clean_env = ENV.to_hash
-    end
-  end
-  ENV.replace(clean_env)
+  ENV.replace(Bundler.respond_to?(:unbundled_env) ? Bundler.unbundled_env : Bundler.clean_env)
 end
 
 source_root = File.expand_path("../..", File.dirname(__FILE__))
