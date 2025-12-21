@@ -19,7 +19,6 @@ Release 6.1.1 (Not yet released)
    - openssl:3.4.1 -> 3.6.0
    - pcre2:10.45 -> 10.47
    - pinentry:1.3.1 -> 1.3.2
-   - zlib: 1.3.1 -> 1.3.1.2
    - rubygems: 3.6.6 -> 4.0.2
    - rubys:
      - dropped 3.1.7
