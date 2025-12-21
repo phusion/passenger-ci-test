@@ -228,15 +228,22 @@ def copy_dependencies(cflags)
       grep(/(error: .*: No such file|fatal error: '.*' file not found)/).
       reject{|s| s =~ /\/usr\/include\// }.
       map do |line|
-      file = $1
-      if file =~ /^boost\//
-        file
-      else
-        line =~ /(.*?):/
-        source = $1
-        File.dirname(source) + "/" + file
+        if line =~ /error: (.*): No such file/
+          file = $1
+        elsif line =~ /fatal error: '(.*)' file not found/
+          file = $1
+        else
+          abort "Bug"
+        end
+
+        if file =~ /^boost\//
+          file
+        else
+          line =~ /(.*?):/
+          source = $1
+          File.dirname(source) + "/" + file
+        end
       end
-    end
     missing_headers.each do |header|
       install("#{BOOST_DIR}/#{header}", header)
     end
