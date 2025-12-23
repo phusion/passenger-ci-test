@@ -1,4 +1,9 @@
-Release 6.1.1 (Not yet released)
+Release 6.1.2 (Not yet released)
+-------------
+ * 
+
+
+Release 6.1.1
 -------------
  * [Ruby] Improve support for Ruby 4 and Frozen String Literals. Closes GH-2619.
  * [Ubuntu] Add packages for Ubuntu 25.10 "questing", remove packages for Ubuntu 25.04 "plucky".
