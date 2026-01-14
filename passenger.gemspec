@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rake', '>= 12.3.3'
   s.add_dependency 'rack', '>= 1.6.13'
   s.add_dependency 'rackup', '>= 1.0.1'
+  s.add_dependency 'logger', '>= 1.7.0'
 
   s.files = Dir[*PhusionPassenger::Packaging::GLOB] -
     Dir[*PhusionPassenger::Packaging::EXCLUDE_GLOB]
