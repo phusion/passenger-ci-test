@@ -1,6 +1,7 @@
 Release 6.1.2 (Not yet released)
 -------------
- * 
+ * [Ruby] logger is now a “bundled” but not “default” gem, so it must be added to gemspec. Closes GH-2642.
+ * [Ruby] Fix Ruby < 2.3 support. Closes GH-2641.
 
 
 Release 6.1.1
