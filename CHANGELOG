@@ -2,6 +2,14 @@ Release 6.1.2 (Not yet released)
 -------------
  * [Ruby] logger is now a “bundled” but not “default” gem, so it must be added to gemspec. Closes GH-2642.
  * [Ruby] Fix Ruby < 2.3 support. Closes GH-2641.
+ * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+   - cmake: 4.2.1 -> 4.2.2
+   - curl: 8.17.0 -> 8.18.0
+   - gnupg: 2.4.8 -> 2.5.16
+   - rubygems: 4.0.2 -> 4.0.4
+   - rubys:
+     - 3.2.9 -> 3.2.10
+     - added 4.0.1
 
 
 Release 6.1.1
