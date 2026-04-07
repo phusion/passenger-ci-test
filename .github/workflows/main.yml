@@ -78,7 +78,7 @@ jobs:
         working-directory: test
 
       - name: Archive logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: cxx-test-logs-linux
           path: 'buildout/testlogs/*'
@@ -188,7 +188,7 @@ jobs:
         if: '!cancelled()'
 
       - name: Archive logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: cxx-test-logs-valgrind
           path: 'buildout/testlogs/*'
@@ -262,7 +262,7 @@ jobs:
         working-directory: test
 
       - name: Archive logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: cxx-test-logs-macos
           path: 'buildout/testlogs/*'
@@ -429,7 +429,7 @@ jobs:
         timeout-minutes: 2
 
       - name: Archive logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: apache-test-logs-${{ matrix.os }}
           path: 'buildout/testlogs/*'
@@ -526,7 +526,7 @@ jobs:
         timeout-minutes: 2
 
       - name: Archive logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: nginx-test-logs-${{ matrix.os }}
           path: 'buildout/testlogs/*'

@@ -55,7 +55,7 @@ jobs:
           DOCKER_ARCH: ${{ matrix.docker_arch }}
         working-directory: packaging/binaries/linux
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         timeout-minutes: 1
         with:
           name: binaries-linux-${{ matrix.arch }}
@@ -205,7 +205,7 @@ jobs:
           WORKSPACE: ${{ github.workspace }}
         working-directory: packaging/binaries/macos
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         timeout-minutes: 1
         with:
           name: binaries-macos-${{ matrix.arch }}
@@ -218,7 +218,7 @@ jobs:
         working-directory: packaging/binaries/macos
 
       - name: Cache test suite gem bundle
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         timeout-minutes: 1
         with:
           path: packaging/binaries/macos/runtime-output/gems
@@ -237,7 +237,7 @@ jobs:
         if: '!cancelled()'
 
       - name: Archive configure logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: generic-binaries-logs-macos

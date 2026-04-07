@@ -100,7 +100,7 @@ jobs:
           CACHE_PATH: packaging/debian/cache
           SUDO: true
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         timeout-minutes: 1
         with:
           name: debian-${{ matrix.distro }}-${{ matrix.arch.name }}

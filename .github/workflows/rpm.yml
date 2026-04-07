@@ -105,7 +105,7 @@ jobs:
           CACHE_PATH: packaging/rpm/cache
           SUDO: true
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         timeout-minutes: 1
         with:
           name: rpm-${{ matrix.distro }}-${{ matrix.arch.rpm_arch }}
