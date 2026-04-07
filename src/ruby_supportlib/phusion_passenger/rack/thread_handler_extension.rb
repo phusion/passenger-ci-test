@@ -50,6 +50,7 @@ module PhusionPassenger
       RACK_URL_SCHEME    = "rack.url_scheme"     # :nodoc:
       RACK_HIJACK_P      = "rack.hijack?"        # :nodoc:
       RACK_HIJACK        = "rack.hijack"         # :nodoc:
+      RACK_RESPONSE_FINISHED    = "rack.response_finished" # :nodoc:
       HTTP_VERSION       = "HTTP_VERSION"        # :nodoc:
       HTTP_1_1           = "HTTP/1.1"            # :nodoc:
       SCRIPT_NAME        = "SCRIPT_NAME"         # :nodoc:
@@ -97,6 +98,7 @@ module PhusionPassenger
               connection
             end
           end
+          env[RACK_RESPONSE_FINISHED] = []
           env[HTTP_VERSION] = HTTP_1_1
 
           # Rails somehow modifies env['REQUEST_METHOD'], so we perform the comparison
@@ -113,6 +115,11 @@ module PhusionPassenger
               # It's a good idea to catch application exceptions here because
               # otherwise maliciously crafted responses can crash the app,
               # forcing it to be respawned, and thereby effectively DoSing it.
+              print_exception("Rack application object", e)
+            end
+            env[RACK_RESPONSE_FINISHED].reverse_each do | cb |
+              cb.call(env, status, headers, e)
+            rescue => e
               print_exception("Rack application object", e)
             end
             return false
@@ -166,6 +173,11 @@ module PhusionPassenger
             end
           ensure
             close_body(body, env, socket_wrapper)
+            env[RACK_RESPONSE_FINISHED].reverse_each do | cb |
+              cb.call(env, status, headers, nil)
+            rescue => e
+              print_exception("Rack application object", e)
+            end
           end
           false
         ensure
@@ -175,10 +187,6 @@ module PhusionPassenger
 
     private
       def process_body(env, connection, socket_wrapper, status, is_head_request, headers, body)
-        if @ush_reporter
-          ush_log_id = @ush_reporter.log_writing_rack_body_begin
-        end
-
         # Fix up incompliant body objects. Ensure that the body object
         # can respond to #each.
         output_body = should_output_body?(status, is_head_request)
@@ -317,16 +325,9 @@ module PhusionPassenger
         end
 
         signal_keep_alive_allowed!
-      ensure
-        if @ush_reporter && ush_log_id
-          @ush_reporter.log_writing_rack_body_end(ush_log_id)
-        end
       end
 
       def close_body(body, env, socket_wrapper)
-        if @ush_reporter
-          ush_log_id = @ush_reporter.log_closing_rack_body_begin
-        end
         begin
           body.close if body && body.respond_to?(:close)
         rescue => e
@@ -335,10 +336,6 @@ module PhusionPassenger
           end
           if !should_swallow_app_error?(e, socket_wrapper)
             print_exception("Rack response body object's #close method", e)
-          end
-        ensure
-          if @ush_reporter && ush_log_id
-            @ush_reporter.log_closing_rack_body_end(ush_log_id)
           end
         end
       end
