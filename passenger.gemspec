@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.email = "software-signing@phusion.nl"
   s.require_paths = ["src/ruby_supportlib"]
   s.metadata = {
+    "rubygems_mfa_required" => "true",
     "bug_tracker_uri"   => "https://github.com/phusion/passenger/issues",
     "changelog_uri"     => "https://github.com/phusion/passenger/blob/stable-#{PhusionPassenger::VERSION_STRING.split('.').slice(0,2).join('.')}/CHANGELOG",
     "documentation_uri" => "https://www.phusionpassenger.com/docs/",
