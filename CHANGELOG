@@ -1,5 +1,6 @@
 Release 6.1.3 (Not yet released)
 -------------
+ * [Ubuntu] Add packages for Ubuntu 26.04 "resolute", remove packages for Ubuntu 25.10 "questing".
  * 
 
 
@@ -30,14 +31,14 @@ Release 6.1.1
    - cmake: 4.0.0 -> 4.2.1
    - curl: 8.12.1 -> 8.17.0
    - git: 2.49.0 -> 2.52.0
-   - gnupg:2.4.7 -> 2.4.8
-   - libffi:3.4.7 -> 3.5.2
-   - libgcrypt:1.11.0 -> 1.11.2
-   - libgpg_error:1.51 -> 1.58
-   - libreadline:8.2 -> 8.3
-   - openssl:3.4.1 -> 3.6.0
-   - pcre2:10.45 -> 10.47
-   - pinentry:1.3.1 -> 1.3.2
+   - gnupg: 2.4.7 -> 2.4.8
+   - libffi: 3.4.7 -> 3.5.2
+   - libgcrypt: 1.11.0 -> 1.11.2
+   - libgpg_error: 1.51 -> 1.58
+   - libreadline: 8.2 -> 8.3
+   - openssl: 3.4.1 -> 3.6.0
+   - pcre2: 10.45 -> 10.47
+   - pinentry: 1.3.1 -> 1.3.2
    - rubygems: 3.6.6 -> 4.0.2
    - rubys:
      - dropped 3.1.7
