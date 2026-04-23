@@ -21,12 +21,12 @@ jobs:
       SCCACHE_AZURE_BLOB_CONTAINER: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
       SCCACHE_AZURE_KEY_PREFIX: sccache/cxx-ubuntu
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
@@ -78,7 +78,7 @@ jobs:
         working-directory: test
 
       - name: Archive logs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: cxx-test-logs-linux
           path: 'buildout/testlogs/*'
@@ -100,12 +100,12 @@ jobs:
       SCCACHE_AZURE_BLOB_CONTAINER: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
       SCCACHE_AZURE_KEY_PREFIX: sccache/cxx-ubuntu-valgrind
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
@@ -188,7 +188,7 @@ jobs:
         if: '!cancelled()'
 
       - name: Archive logs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: cxx-test-logs-valgrind
           path: 'buildout/testlogs/*'
@@ -209,12 +209,12 @@ jobs:
       SCCACHE_AZURE_BLOB_CONTAINER: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
       SCCACHE_AZURE_KEY_PREFIX: sccache/cxx-macos-14-arm
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
@@ -262,7 +262,7 @@ jobs:
         working-directory: test
 
       - name: Archive logs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: cxx-test-logs-macos
           path: 'buildout/testlogs/*'
@@ -306,18 +306,18 @@ jobs:
       SCCACHE_AZURE_KEY_PREFIX: ${{ matrix.sccache_azure_key_prefix }}
       SCCACHE_CACHE_MULTIARCH: true
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         timeout-minutes: 1
         with:
           node-version: 18
@@ -429,7 +429,7 @@ jobs:
         timeout-minutes: 2
 
       - name: Archive logs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: apache-test-logs-${{ matrix.os }}
           path: 'buildout/testlogs/*'
@@ -461,18 +461,18 @@ jobs:
       SCCACHE_AZURE_BLOB_CONTAINER: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
       SCCACHE_AZURE_KEY_PREFIX: ${{ matrix.sccache_azure_key_prefix }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         timeout-minutes: 1
         with:
           node-version: 18
@@ -526,7 +526,7 @@ jobs:
         timeout-minutes: 2
 
       - name: Archive logs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: nginx-test-logs-${{ matrix.os }}
           path: 'buildout/testlogs/*'
@@ -560,12 +560,12 @@ jobs:
       SCCACHE_AZURE_BLOB_CONTAINER: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
       SCCACHE_AZURE_KEY_PREFIX: ${{ matrix.sccache_azure_key_prefix }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
@@ -645,12 +645,12 @@ jobs:
       SCCACHE_AZURE_BLOB_CONTAINER: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
       SCCACHE_AZURE_KEY_PREFIX: ${{ matrix.sccache_azure_key_prefix }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
@@ -711,12 +711,12 @@ jobs:
       SCCACHE_AZURE_BLOB_CONTAINER: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
       SCCACHE_AZURE_KEY_PREFIX: ${{ matrix.sccache_azure_key_prefix }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
@@ -768,18 +768,18 @@ jobs:
             os: macos-14
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
           bundler-cache: true
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         timeout-minutes: 1
         with:
           node-version: 18
@@ -800,12 +800,12 @@ jobs:
     runs-on: macos-14
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
@@ -847,12 +847,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 1
         with:
           submodules: true
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
         timeout-minutes: 2
         with:
           ruby-version: ${{ env.DEFAULT_RUBY_VERSION }}
