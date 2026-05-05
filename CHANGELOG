@@ -1,7 +1,7 @@
 Release 6.1.3 (Not yet released)
 -------------
  * [Ubuntu] Add packages for Ubuntu 26.04 "resolute", remove packages for Ubuntu 25.10 "questing" and Ubuntu 20.04 "focal".
- * [Ubuntu] Build nginx dynamic modules against nginx-dev sources to fix incompatibility with upstream.
+ * [Nginx] Build Nginx dynamic modules against nginx-dev sources on Ubuntu/Debian where available to fix Ubuntu's incompatibility with upstream.
  * [Ruby] add support for `rack.response_finished`. Closes GH-2418.
  * Fix crash when buffer creation fails.
  * [Nginx] The preferred PCRE2 version is now 10.47 (previously 10.46).
@@ -20,7 +20,7 @@ Release 6.1.3 (Not yet released)
    - rubygems: 4.0.4 -> 4.0.10
    - zlib: 1.3.1 -> 1.3.2
    - rubies:
-      - 3.2.10 -> 3.2.11
+      - removed 3.2 for EOL
       - 3.3.10 -> 3.3.11
       - 3.4.8 -> 3.4.9
       - 4.0.1 -> 4.0.3
