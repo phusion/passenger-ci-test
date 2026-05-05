@@ -1,0 +1,30 @@
+name: Azure cache deletion workflow
+
+on: workflow_dispatch
+
+jobs:
+  delete:
+    name: Delete stuff from azure
+    strategy:
+      fail-fast: false
+      matrix:
+        distro:
+          - resolute
+          - bookworm
+          - trixie
+        arch:
+          - amd64
+          - arm64
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Fetch cache
+        run: ./dev/ci/delete-cache-az-blob-storage
+        timeout-minutes: 5
+        env:
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
+          CONTAINER_NAME: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
+          BLOB_NAME: "binaries/debian-cache-${{ matrix.distro }}-${{ matrix.arch }}.tar.zstd"
+          CACHE_PATH: packaging/debian/cache
