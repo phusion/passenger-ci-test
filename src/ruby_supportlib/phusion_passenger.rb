@@ -31,7 +31,7 @@ module PhusionPassenger
 
   PACKAGE_NAME = 'passenger'
   # Run 'rake src/cxx_supportlib/Constants.h configkit_schemas_inline_comments' after changing this number.
-  VERSION_STRING = '6.1.3'
+  VERSION_STRING = '6.1.4'
 
   # Tip: find the SHA-256 with ./dev/nginx_version_sha256 <VERSION>
   PREFERRED_NGINX_VERSION = '1.30.1'
