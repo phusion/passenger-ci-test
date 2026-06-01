@@ -1,6 +1,15 @@
 Release 6.1.4 (Not yet released)
 -------------
- *
+ * [Nginx] Upgrades preferred Nginx to 1.30.2 from 1.30.1.
+ * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+   - ccache: 4.13.4 -> 4.13.6
+   - cmake: 4.3.2 -> 4.3.3
+   - gnupg: 2.5.19 -> 2.5.20
+   - libgpg_error: 1.60 -> 1.61
+   - libksba: 1.6.8 -> 1.8.0
+   - rubygems: 4.0.10 -> 4.0.12
+   - rubies:
+      - 4.0.3 -> 4.0.5
 
 
 Release 6.1.3
