@@ -57,7 +57,7 @@ module PhusionPassenger
 
   private
     def callback_list_for_event(name)
-      return case name
+      case name
       when :starting_worker_process
         @@event_starting_worker_process
       when :stopping_worker_process

@@ -36,11 +36,11 @@ module PhusionPassenger
 
       def run
         @options = {
-          :colorize => :auto,
-          :force_tip => true,
-          :connect_timeout => 30,
-          :idle_timeout => 30,
-          :address_sanitizer => false,
+          colorize: :auto,
+          force_tip: true,
+          connect_timeout: 30,
+          idle_timeout: 30,
+          address_sanitizer: false,
         }
         parse_options
         initialize_objects

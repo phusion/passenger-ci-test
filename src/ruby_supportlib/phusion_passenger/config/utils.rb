@@ -155,7 +155,7 @@ module PhusionPassenger
       end
 
       def is_enterprise?
-        return defined?(PhusionPassenger::PASSENGER_IS_ENTERPRISE) && PhusionPassenger::PASSENGER_IS_ENTERPRISE
+        defined?(PhusionPassenger::PASSENGER_IS_ENTERPRISE) && PhusionPassenger::PASSENGER_IS_ENTERPRISE
       end
     end
 

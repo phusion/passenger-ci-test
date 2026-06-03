@@ -31,7 +31,6 @@ PhusionPassenger.require_passenger_lib 'utils/unseekable_socket'
 
 module PhusionPassenger
   class RequestHandler
-
     # This class encapsulates the logic of a single RequestHandler thread.
     class ThreadHandler
       include DebugLogging
@@ -223,14 +222,14 @@ module PhusionPassenger
         if @connect_password && headers[PASSENGER_CONNECT_PASSWORD] != @connect_password
           warn "*** Passenger RequestHandler warning: " <<
                "someone tried to connect with an invalid connect password."
-          return
+          nil
         else
-          return headers
+          headers
         end
       rescue SecurityError => e
         warn("*** Passenger RequestHandler warning: " <<
              "HTTP header size exceeded maximum.")
-        return
+        nil
       end
 
       # Like parse_session_request, but parses an HTTP request. This is a very minimalistic
@@ -274,7 +273,7 @@ module PhusionPassenger
             headers["REMOTE_PORT"],
             headers["REMOTE_ADDR"]     = connection.to_io.is_a?(TCPSocket) ?
                                            connection.to_io.peeraddr(:numeric)[1..2] :
-                                           [nil, '127.0.0.1']
+                                           [ nil, '127.0.0.1' ]
 
           else
             header, value = line.split(/\s*:\s*/, 2)
@@ -291,12 +290,12 @@ module PhusionPassenger
         if @connect_password && headers["HTTP_X_PASSENGER_CONNECT_PASSWORD"] != @connect_password
           warn "*** Passenger RequestHandler warning: " <<
                "someone tried to connect with an invalid connect password."
-          return
+          nil
         else
-          return headers
+          headers
         end
       rescue EOFError
-        return
+        nil
       end
 
       def process_ping(env, connection)
@@ -342,13 +341,12 @@ module PhusionPassenger
 
       def should_reraise_error?(e)
         # Stubable by unit tests.
-        return true
+        true
       end
 
       def should_swallow_app_error?(e, socket_wrapper)
-        return socket_wrapper && socket_wrapper.source_of_exception?(e) && [Errno::EPIPE, Errno::ECONNRESET].any?{|er| e.is_a?(er)}
+        socket_wrapper && socket_wrapper.source_of_exception?(e) && [ Errno::EPIPE, Errno::ECONNRESET ].any? { |er| e.is_a?(er) }
       end
     end
-
   end # class RequestHandler
 end # module PhusionPassenger

@@ -1,4 +1,5 @@
 # encoding: binary
+
 #
 # This file is taken from Unicorn. The following license applies to this file
 # (and this file only, not to the rest of Phusion Passenger):

@@ -32,28 +32,28 @@ module PhusionPassenger
     # Extra flags that should always be passed to the C compiler
     # when linking, to be included last in the command string.
     def self.portability_c_ldflags
-      return portability_c_or_cxx_ldflags(:c)
+      portability_c_or_cxx_ldflags(:c)
     end
     memoize :portability_c_ldflags
 
     # Extra flags that should always be passed to the C++ compiler
     # when linking, to be included last in the command string.
     def self.portability_cxx_ldflags
-      return portability_c_or_cxx_ldflags(:cxx)
+      portability_c_or_cxx_ldflags(:cxx)
     end
     memoize :portability_cxx_ldflags
 
     # Extra compiler flags that should always be passed to the C compiler,
     # last in the command string.
     def self.default_extra_cflags
-      return default_extra_c_or_cxxflags(:cc)
+      default_extra_c_or_cxxflags(:cc)
     end
     memoize :default_extra_cflags, true
 
     # Extra compiler flags that should always be passed to the C++ compiler,
     # last in the command string.
     def self.default_extra_cxxflags
-      return default_extra_c_or_cxxflags(:cxx)
+      default_extra_c_or_cxxflags(:cxx)
     end
     memoize :default_extra_cxxflags, true
 
@@ -61,8 +61,8 @@ module PhusionPassenger
     def self.check_hash_map(flags)
       hash_namespace = nil
       ok = false
-      ['__gnu_cxx', '', 'std', 'stdext'].each do |namespace|
-        ['hash_map', 'ext/hash_map'].each do |hash_map_header|
+      [ '__gnu_cxx', '', 'std', 'stdext' ].each do |namespace|
+        [ 'hash_map', 'ext/hash_map' ].each do |hash_map_header|
           ok = try_compile("Checking for #{hash_map_header}", :cxx, %Q{
             #include <#{hash_map_header}>
             int
@@ -81,9 +81,9 @@ module PhusionPassenger
         end
         break if ok
       end
-      ['ext/hash_fun.h', 'functional', 'tr1/functional',
+      [ 'ext/hash_fun.h', 'functional', 'tr1/functional',
        'ext/stl_hash_fun.h', 'hash_fun.h', 'stl_hash_fun.h',
-       'stl/_hash_fun.h'].each do |hash_function_header|
+       'stl/_hash_fun.h' ].each do |hash_function_header|
         ok = try_compile("Checking for #{hash_function_header}", :cxx, %Q{
           #include <#{hash_function_header}>
           int
@@ -186,7 +186,7 @@ module PhusionPassenger
         flags << '-O'
       end
 
-      return flags.join(' ')
+      flags.join(' ')
     end
     private_class_method :default_extra_c_or_cxxflags
 
@@ -201,7 +201,7 @@ module PhusionPassenger
       result << '-lrt' if has_rt_library?
       result << '-lmath' if has_math_library?
       result << '-ldl' if has_dl_library?
-      return result.join(' ')
+      result.join(' ')
     end
     private_class_method :portability_c_or_cxx_ldflags
   end

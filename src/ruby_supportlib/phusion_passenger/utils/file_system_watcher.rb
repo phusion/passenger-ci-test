@@ -64,11 +64,11 @@ module PhusionPassenger
           filenames = filenames.map do |filename|
             filename.to_s
           end
-          return _new(filenames, termination_pipe)
+          _new(filenames, termination_pipe)
         end
 
         def self.opens_files?
-          return true
+          true
         end
       end
     else
@@ -76,7 +76,7 @@ module PhusionPassenger
         attr_accessor :poll_interval
 
         def self.opens_files?
-          return false
+          false
         end
 
         def initialize(filenames, termination_pipe = nil)
@@ -107,7 +107,7 @@ module PhusionPassenger
           while true
             if changed?
               return true
-            elsif select([@termination_pipe], nil, nil, @poll_interval)
+            elsif select([ @termination_pipe ], nil, nil, @poll_interval)
               return nil
             end
           end
@@ -151,9 +151,9 @@ module PhusionPassenger
               end
             end
 
-            return count != @subfiles.size
+            count != @subfiles.size
           rescue Errno::EACCES, Errno::ENOENT
-            return true
+            true
           end
         end
 
@@ -170,14 +170,14 @@ module PhusionPassenger
             else
               mtime_changed = false
             end
-            return @stat.ino != new_stat.ino || @stat.ftype != new_stat.ftype || mtime_changed
+            @stat.ino != new_stat.ino || @stat.ftype != new_stat.ftype || mtime_changed
           rescue Errno::EACCES, Errno::ENOENT
-            return true
+            true
           end
         end
 
         def changed?
-          return @dirs.any?  { |dir_info| dir_info.changed? } ||
+          @dirs.any?  { |dir_info| dir_info.changed? } ||
                  @files.any? { |file_info| file_info.changed? }
         end
       end

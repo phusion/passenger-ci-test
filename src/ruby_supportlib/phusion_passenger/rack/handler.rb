@@ -45,7 +45,7 @@ module PhusionPassenger
 
       private
       def build_args(options)
-        args = ['-e', environment]
+        args = [ '-e', environment ]
         args << '-p' << options[:Port].to_s if options[:Port]
         args << '-a' << options[:Host].to_s if options[:Host]
         args << '-R' << options[:config].to_s if options[:config]

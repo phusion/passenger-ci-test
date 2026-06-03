@@ -42,7 +42,7 @@ module PhusionPassenger
 
     private
       def self.create_default_options
-        return {}
+        {}
       end
 
       def parse_options

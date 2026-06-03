@@ -1,4 +1,5 @@
 #  encoding: utf-8
+
 #
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2010-2025 Asynchronous B.V.
@@ -44,7 +45,7 @@ module PhusionPassenger
           'depcheck_specs/ruby',
           'depcheck_specs/gems',
           'depcheck_specs/libs',
-          'depcheck_specs/utilities'
+          'depcheck_specs/utilities',
         ]
         ids = [
           'cc',
@@ -52,9 +53,9 @@ module PhusionPassenger
           'rake',
           'libcurl-dev',
           'openssl-dev',
-          'zlib-dev'
+          'zlib-dev',
         ].compact
-        return [specs, ids]
+        [ specs, ids ]
       end
 
       def install_doc_url
@@ -121,7 +122,7 @@ module PhusionPassenger
           else
             new_screen
             render_template 'config/agent_compiler/confirm_enable_optimizations',
-              :total_ram => total_ram_gb
+              total_ram: total_ram_gb
             puts
             @optimize = prompt_confirmation('Compile with optimizations?')
             puts
@@ -158,11 +159,11 @@ module PhusionPassenger
         begin
           meminfo = File.read("/proc/meminfo")
           if meminfo =~ /^MemTotal: *(\d+) kB$/
-            return sprintf("%.1f", $1.to_i / 1024 / 1024)
+            sprintf("%.1f", $1.to_i / 1024 / 1024)
           end
         rescue Errno::ENOENT, Errno::EACCES
           # Don't do anything on systems without memory information.
-          return nil
+          nil
         end
       end
     end

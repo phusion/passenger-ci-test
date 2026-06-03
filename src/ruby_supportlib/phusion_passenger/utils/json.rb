@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 #
 ## Stupid small pure Ruby JSON parser & generator.
 #
@@ -55,7 +56,7 @@ class JSON
   def_delegators :scanner, :scan, :matched
   private :s, :scan, :matched
 
-  def initialize data
+  def initialize(data)
     @scanner = PhusionPassenger::Utils::StringScanner.new data.to_s
   end
 
@@ -105,7 +106,7 @@ class JSON
     ary
   end
 
-  SPEC = {'b' => "\b", 'f' => "\f", 'n' => "\n", 'r' => "\r", 't' => "\t"}
+  SPEC = { 'b' => "\b", 'f' => "\f", 'n' => "\n", 'r' => "\r", 't' => "\t" }
   UNI = 'u'; CODE = /[a-fA-F0-9]{4}/
   STR = /"/; STE = '"'
   ESC = '\\'
@@ -133,7 +134,7 @@ class JSON
     raise "parse error at: #{scan(/.{1,20}/m).inspect}"
   end
 
-  def repeat_until reg
+  def repeat_until(reg)
     until scan(reg)
       pos = s.pos
       yield
@@ -157,7 +158,7 @@ class JSON
       end
     end
 
-    ESC_MAP = Hash.new {|h,k| k }.update \
+    ESC_MAP = Hash.new { |h, k| k }.update \
       "\r" => 'r',
       "\n" => 'n',
       "\f" => 'f',
@@ -167,7 +168,7 @@ class JSON
     def quote(str) %("#{str}") end
 
     def generate_String(str)
-      quote str.gsub(/[\r\n\f\t\b"\\]/) { "\\#{ESC_MAP[$&]}"}
+      quote str.gsub(/[\r\n\f\t\b"\\]/) { "\\#{ESC_MAP[$&]}" }
     end
 
     def generate_VersionComparer(vc)
@@ -188,7 +189,7 @@ class JSON
 
     def generate_NilClass(*) 'null' end
 
-    def generate_Array(ary) '[%s]' % ary.map {|o| generate_type(o) }.join(', ') end
+    def generate_Array(ary) '[%s]' % ary.map { |o| generate_type(o) }.join(', ') end
 
     def generate_Hash(hash)
       '{%s}' % hash.map { |key, value|

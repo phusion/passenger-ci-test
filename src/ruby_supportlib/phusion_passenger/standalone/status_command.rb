@@ -110,11 +110,11 @@ module PhusionPassenger
       def create_controller
         Standalone::ControlUtils.require_daemon_controller
         @controller = DaemonController.new(
-          :identifier    => "#{PROGRAM_NAME} Standalone engine",
-          :start_command => "true", # Doesn't matter
-          :ping_command  => "true", # Doesn't matter
-          :pid_file      => @options[:pid_file],
-          :log_file      => "/dev/null"
+          identifier: "#{PROGRAM_NAME} Standalone engine",
+          start_command: "true", # Doesn't matter
+          ping_command: "true", # Doesn't matter
+          pid_file: @options[:pid_file],
+          log_file: "/dev/null"
         )
       end
     end

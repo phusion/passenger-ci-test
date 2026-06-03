@@ -8,7 +8,6 @@ module Utils
 # well with unlinked files.  This one is much shorter, easier
 # to understand, and slightly faster.
 class TmpIO < File
-
   # creates and returns a new File object.  The File is unlinked
   # immediately, switched to binary mode, and userspace output
   # buffering is disabled
@@ -25,7 +24,7 @@ class TmpIO < File
       unlink_immediately = true
     end
     fp = begin
-      super("#{Dir::tmpdir}/#{namespace}-#{rand(0x100000000).to_s(36)}#{suffix}", mode | CREAT | EXCL, 0600)
+      super("#{Dir.tmpdir}/#{namespace}-#{rand(0x100000000).to_s(36)}#{suffix}", mode | CREAT | EXCL, 0600)
     rescue Errno::EEXIST
       retry
     end
@@ -42,7 +41,7 @@ class TmpIO < File
 end
 
 # Like Dir.mktmpdir, but creates shorter filenames.
-def self.mktmpdir(prefix_suffix=nil, tmpdir=nil)
+def self.mktmpdir(prefix_suffix = nil, tmpdir = nil)
   case prefix_suffix
   when nil
     prefix = "d"

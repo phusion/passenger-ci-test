@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # encoding: binary
+
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2013-2025 Asynchronous B.V.
 #
@@ -132,7 +133,7 @@ module PhusionPassenger
       server.close_on_exec!
       File.chmod(0600, socket_filename)
 
-      [server, socket_filename]
+      [ server, socket_filename ]
     end
 
     def self.reinitialize_std_channels(work_dir)

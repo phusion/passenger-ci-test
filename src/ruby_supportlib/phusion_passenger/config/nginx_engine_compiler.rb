@@ -1,4 +1,5 @@
 #  encoding: utf-8
+
 #
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2010-2025 Asynchronous B.V.
@@ -80,7 +81,7 @@ module PhusionPassenger
           'depcheck_specs/compiler_toolchain',
           'depcheck_specs/ruby',
           'depcheck_specs/libs',
-          'depcheck_specs/utilities'
+          'depcheck_specs/utilities',
         ]
         ids = [
           'cc',
@@ -89,9 +90,9 @@ module PhusionPassenger
           'rake',
           'openssl-dev',
           'zlib-dev',
-          'pcre2-dev'
+          'pcre2-dev',
         ].compact
-        return [specs, ids]
+        [ specs, ids ]
       end
 
       def install_doc_url
@@ -232,7 +233,7 @@ module PhusionPassenger
           tarball  = "#{@working_dir}/#{basename}"
 
           options = {
-            :show_progress => @stdout.tty?
+            show_progress: @stdout.tty?,
           }
           if @connect_timeout && @connect_timeout != 0
             options[:connect_timeout] = @connect_timeout

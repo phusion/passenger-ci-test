@@ -235,7 +235,7 @@ module PhusionPassenger
           # quickly switches to a mirror.
           "--connect-timeout", "0",
           "--engine", @options[:engine],
-          "--idle-timeout", "0"
+          "--idle-timeout", "0",
         ]
         if @options[:auto]
           args << "--auto"
@@ -398,13 +398,13 @@ module PhusionPassenger
       end
 
       def touch_temp_dir_in_background
-        command = [@agent_exe,
+        command = [ @agent_exe,
           "temp-dir-toucher",
           @working_dir,
           "--cleanup",
           "--daemonize",
           "--pid-file", "#{@working_dir}/temp_dir_toucher.pid",
-          "--log-file", @options[:log_file]]
+          "--log-file", @options[:log_file] ]
         command << "--user" << @options[:user] unless @options[:user].nil?
         command << "--nginx-pid" << @engine.pid.to_s if @options[:engine] == 'nginx'
         result = system(*command)
@@ -487,7 +487,7 @@ module PhusionPassenger
       end
 
       def should_wait_until_engine_has_exited?
-        return !@options[:daemonize] || @app_finder.multi_mode?
+        !@options[:daemonize] || @app_finder.multi_mode?
       end
 
 

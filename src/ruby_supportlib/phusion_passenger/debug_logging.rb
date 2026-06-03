@@ -42,7 +42,7 @@ module PhusionPassenger
     end
 
     def self.log_level
-      return @@log_level
+      @@log_level
     end
 
     def self.log_level=(level)
@@ -60,7 +60,7 @@ module PhusionPassenger
     end
 
     def self._log_device
-      return @@log_device
+      @@log_device
     end
 
     def self.stderr_evaluator=(block)

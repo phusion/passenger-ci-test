@@ -39,19 +39,19 @@ module PhusionPassenger
     class InstallStandaloneRuntimeCommand < Command
       def run
         @options = {
-          :log_level => Logger::INFO,
-          :colorize => :auto,
-          :force => false,
-          :force_tip => true,
-          :compile => true,
-          :install_agent => true,
-          :install_agent_args => [],
-          :download_args => [
+          log_level: Logger::INFO,
+          colorize: :auto,
+          force: false,
+          force_tip: true,
+          compile: true,
+          install_agent: true,
+          install_agent_args: [],
+          download_args: [
             "--no-error-colors",
-            "--no-compilation-tip"
+            "--no-compilation-tip",
           ],
-          :engine => "nginx",
-          :compile_args => []
+          engine: "nginx",
+          compile_args: [],
         }
         parse_options
         initialize_objects
@@ -283,7 +283,7 @@ module PhusionPassenger
       end
 
       def boolean_option(env_name)
-        ["true", "on", "yes", "1"].include?(ENV[env_name])
+        [ "true", "on", "yes", "1" ].include?(ENV[env_name])
       end
     end
 

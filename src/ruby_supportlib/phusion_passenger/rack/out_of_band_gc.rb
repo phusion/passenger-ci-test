@@ -1,4 +1,5 @@
 # encoding: binary
+
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2012-2025 Asynchronous B.V.
 #
@@ -66,7 +67,7 @@ module PhusionPassenger
           raise "Unrecognized Out-Of-Band GC strategy #{@strategy.inspect}"
         end
 
-        [status, headers, body]
+        [ status, headers, body ]
       end
 
     private
@@ -123,9 +124,9 @@ module PhusionPassenger
 
       def initialize_legacy(frequency, logger = nil)
         initialize_with_options(
-          :strategy => :counting,
-          :frequency => frequency,
-          :logger => logger)
+          strategy: :counting,
+          frequency: frequency,
+          logger: logger)
       end
     end
 

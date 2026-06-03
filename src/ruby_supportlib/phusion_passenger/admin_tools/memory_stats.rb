@@ -1,4 +1,5 @@
 # encoding: binary
+
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2010-2025 Asynchronous B.V.
 #
@@ -42,23 +43,23 @@ module PhusionPassenger
         attr_accessor :private_dirty_rss    # in KB
 
         def vm_size_in_mb
-          return sprintf("%.1f MB", vm_size / 1024.0)
+          sprintf("%.1f MB", vm_size / 1024.0)
         end
 
         def rss_in_mb
-          return sprintf("%.1f MB", rss / 1024.0)
+          sprintf("%.1f MB", rss / 1024.0)
         end
 
         def private_dirty_rss_in_mb
           if private_dirty_rss.is_a?(Numeric)
-            return sprintf("%.1f MB", private_dirty_rss / 1024.0)
+            sprintf("%.1f MB", private_dirty_rss / 1024.0)
           else
-            return "?"
+            "?"
           end
         end
 
         def to_a
-          return [pid, ppid, vm_size_in_mb, private_dirty_rss_in_mb, rss_in_mb, name]
+          [ pid, ppid, vm_size_in_mb, private_dirty_rss_in_mb, rss_in_mb, name ]
         end
       end
 
@@ -67,11 +68,11 @@ module PhusionPassenger
       def apache_processes
         @apache_processes ||= begin
           if PlatformInfo.httpd
-            processes = list_processes(:exe => PlatformInfo.httpd)
+            processes = list_processes(exe: PlatformInfo.httpd)
             if processes.empty?
               # On some Linux distros, the Apache worker processes
               # are called "httpd.worker"
-              processes = list_processes(:exe => "#{PlatformInfo.httpd}.worker")
+              processes = list_processes(exe: "#{PlatformInfo.httpd}.worker")
             end
             processes
           else
@@ -83,14 +84,13 @@ module PhusionPassenger
       # Returns a list of Nginx processes, which may be the empty list if
       # Nginx is not running.
       def nginx_processes
-        @nginx_processes ||= list_processes(:exe => "nginx")
+        @nginx_processes ||= list_processes(exe: "nginx")
       end
 
       # Returns a list of Phusion Passenger processes, which may be the empty list if
       # Phusion Passenger is not running.
       def passenger_processes
-        @passenger_processes ||= list_processes(:match =>
-          /((^| )Passenger|(^| )Rails:|(^| )Rack:|wsgi-loader.py|(.*)PassengerAgent|rack-loader.rb)/)
+        @passenger_processes ||= list_processes(match:           /((^| )Passenger|(^| )Rails:|(^| )Rack:|wsgi-loader.py|(.*)PassengerAgent|rack-loader.rb)/)
       end
 
       # Returns the sum of the memory usages of all given processes.
@@ -108,28 +108,28 @@ module PhusionPassenger
               accurate = true
             end
           end
-          return [total, accurate]
+          [ total, accurate ]
         else
           processes.each do |p|
             total += p.rss
           end
-          return [total, true]
+          [ total, true ]
         end
       end
 
       def platform_provides_private_dirty_rss_information?
-        return os_name_simple == "linux"
+        os_name_simple == "linux"
       end
 
       # Returns whether root privileges are required in order to measure private dirty RSS.
       # Only meaningful if #platform_provides_private_dirty_rss_information? returns true.
       def root_privileges_required_for_private_dirty_rss?
         all_processes = (apache_processes || []) + nginx_processes + passenger_processes
-        return all_processes.any?{ |p| p.private_dirty_rss.nil? }
+        all_processes.any? { |p| p.private_dirty_rss.nil? }
       end
 
       def should_show_private_dirty_rss?
-        return platform_provides_private_dirty_rss_information? &&
+        platform_provides_private_dirty_rss_information? &&
           (::Process.euid == 0 || root_privileges_required_for_private_dirty_rss?)
       end
 
@@ -150,7 +150,7 @@ module PhusionPassenger
             line = $1.strip
             used = line.split(/ +/).first.to_i
 
-            [total, used]
+            [ total, used ]
           when "macosx"
             vm_stat = `vm_stat`
             vm_stat =~ /page size of (\d+) bytes/
@@ -172,7 +172,7 @@ module PhusionPassenger
               wired = wired.to_i * page_size / 1024
 
               used = active + wired
-              [free + inactive + used, used]
+              [ free + inactive + used, used ]
             else
               nil
             end
@@ -193,7 +193,7 @@ module PhusionPassenger
               free = to_kb.call($7, $8)
 
               used = active + wired
-              [free + inactive + used, used]
+              [ free + inactive + used, used ]
             else
               nil
             end
@@ -203,7 +203,7 @@ module PhusionPassenger
 
     private
       def os_name_simple
-        return PlatformInfo.os_name_simple
+        PlatformInfo.os_name_simple
       end
 
       # Returns a list of Process objects that match the given search criteria.
@@ -266,7 +266,7 @@ module PhusionPassenger
           p.name.sub!(/ \(ruby\)\Z/, '')
           if p.name !~ /^ps/ && (!options[:match] || p.name.match(options[:match]))
             # Convert some values to integer.
-            [:pid, :ppid, :vm_size, :rss].each do |attr|
+            [ :pid, :ppid, :vm_size, :rss ].each do |attr|
               p.send("#{attr}=", p.send(attr).to_i)
             end
             p.threads = p.threads.to_i if threads_known
@@ -277,7 +277,7 @@ module PhusionPassenger
             processes << p
           end
         end
-        return processes
+        processes
       end
 
       # Returns the private dirty RSS for the given process, in KB.
@@ -290,12 +290,12 @@ module PhusionPassenger
           end
         end
         if total == 0
-          return nil
+          nil
         else
-          return total
+          total
         end
       rescue Errno::EACCES, Errno::ENOENT, Errno::ESRCH
-        return nil
+        nil
       end
 
       if ''.respond_to?(:force_encoding)

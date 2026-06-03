@@ -29,7 +29,7 @@ TEST_COMMON_LIBRARY    = COMMON_LIBRARY
 TEST_COMMON_CFLAGS     = "-DTESTING_APPLICATION_POOL"
 
 desc "Run all unit tests and integration tests"
-task :test => ['test:oxt', 'test:cxx', 'test:ruby', 'test:node', 'test:integration']
+task test: [ 'test:oxt', 'test:cxx', 'test:ruby', 'test:node', 'test:integration' ]
 
 desc "Clean all compiled test files"
 task 'test:clean' do
@@ -37,7 +37,7 @@ task 'test:clean' do
   sh("rm -f test/cxx/*.#{PlatformInfo.precompiled_header_extension} test/cxx/*.gch test/cxx/*.pch")
 end
 
-task :clean => 'test:clean'
+task clean: 'test:clean'
 
 file "#{TEST_OUTPUT_DIR}allocate_memory" => 'test/support/allocate_memory.c' do
   compile_c("#{TEST_OUTPUT_DIR}allocate_memory.o", 'test/support/allocate_memory.c')
@@ -56,7 +56,7 @@ task 'test:install_deps' do
     if bundler_too_new?
       sh "bundle config set --local path #{shesc deps_target}"
     else
-      bundle_args.concat(["--path", shesc(deps_target)])
+      bundle_args.concat([ "--path", shesc(deps_target) ])
     end
   end
 
@@ -70,7 +70,7 @@ task 'test:install_deps' do
     if bundler_too_new?
       sh "bundle config set --local without 'base'"
     else
-      bundle_args.concat(["--without", "base"])
+      bundle_args.concat([ "--without", "base" ])
     end
   end
   sh "bundle install #{bundle_args.join(' ')} #{ENV['BUNDLE_ARGS']}"

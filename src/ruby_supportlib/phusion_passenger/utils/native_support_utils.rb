@@ -35,12 +35,12 @@ module PhusionPassenger
         # Split the given string into an hash. Keys and values are obtained by splitting the
         # string using the null character as the delimitor.
         def split_by_null_into_hash(data)
-          return PhusionPassenger::NativeSupport.split_by_null_into_hash(data)
+          PhusionPassenger::NativeSupport.split_by_null_into_hash(data)
         end
 
         # Wrapper for getrusage().
         def process_times
-          return PhusionPassenger::NativeSupport.process_times
+          PhusionPassenger::NativeSupport.process_times
         end
       else
         NULL = "\0".freeze
@@ -51,12 +51,12 @@ module PhusionPassenger
         def split_by_null_into_hash(data)
           args = data.split(NULL, -1)
           args.pop
-          return Hash[*args]
+          Hash[*args]
         end
 
         def process_times
           times = Process.times
-          return ProcessTimes.new((times.utime * 1_000_000).to_i,
+          ProcessTimes.new((times.utime * 1_000_000).to_i,
             (times.stime * 1_000_000).to_i)
         end
       end

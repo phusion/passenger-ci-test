@@ -42,7 +42,7 @@ module PhusionPassenger
           options.each do |option|
             option[:context] ||= :application
             if option[:context] == :location
-              option[:htaccess_context] ||= ['OR_OPTIONS']
+              option[:htaccess_context] ||= [ 'OR_OPTIONS' ]
             end
           end
         end

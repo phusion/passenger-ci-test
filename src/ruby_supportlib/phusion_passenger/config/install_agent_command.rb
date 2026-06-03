@@ -36,16 +36,16 @@ module PhusionPassenger
     class InstallAgentCommand < Command
       def run
         @options = {
-          :log_level => Logger::INFO,
-          :colorize => :auto,
-          :force => false,
-          :force_tip => true,
-          :compile => true,
-          :download_args => [
+          log_level: Logger::INFO,
+          colorize: :auto,
+          force: false,
+          force_tip: true,
+          compile: true,
+          download_args: [
             "--no-error-colors",
-            "--no-compilation-tip"
+            "--no-compilation-tip",
           ],
-          :compile_args => []
+          compile_args: [],
         }
         parse_options
         initialize_objects
@@ -165,9 +165,9 @@ module PhusionPassenger
         end
         begin
           DownloadAgentCommand.new(@options[:download_args]).run
-          return true
+          true
         rescue SystemExit => e
-          return e.success?
+          e.success?
         end
       end
 

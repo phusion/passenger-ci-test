@@ -7,7 +7,7 @@ SEARCH_PATHS = [
   "src/cxx_supportlib",
   "src/cxx_supportlib/vendor-copy",
   "src/cxx_supportlib/vendor-modified",
-  "test/cxx"
+  "test/cxx",
 ]
 SCAN_FILES = Dir[
   "src/**/*.{c,cpp,h,hpp}",
@@ -18,8 +18,8 @@ EXCLUDE_FILES = Dir[
   "src/cxx_supportlib/vendor-copy/**/*",
   "src/cxx_supportlib/vendor-modified/**/*"
 ]
-EXCLUDE_FILES_INDEX = Hash[EXCLUDE_FILES.map { |v| [v, true] }]
-EXCLUDE_NAMES = %w{
+EXCLUDE_FILES_INDEX = Hash[EXCLUDE_FILES.map { |v| [ v, true ] }]
+EXCLUDE_NAMES = %w[
   string
   vector
   map
@@ -106,8 +106,8 @@ EXCLUDE_NAMES = %w{
   uv.h
   zlib.h
   version.h
-}
-EXCLUDE_NAMES_INDEX = Hash[EXCLUDE_NAMES.map { |v| [v, true] }]
+]
+EXCLUDE_NAMES_INDEX = Hash[EXCLUDE_NAMES.map { |v| [ v, true ] }]
 EXCLUDE_NAME_REGEXP = %r{
   ^(
     sys/
@@ -165,7 +165,7 @@ end
 
 def search_include_file(name, first_search_path = nil)
   if first_search_path
-    search_paths = [first_search_path] + SEARCH_PATHS
+    search_paths = [ first_search_path ] + SEARCH_PATHS
   else
     search_paths = SEARCH_PATHS
   end

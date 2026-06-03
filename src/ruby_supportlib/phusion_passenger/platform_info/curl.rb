@@ -30,14 +30,14 @@ module PhusionPassenger
     def self.curl_flags
       result = `(curl-config --cflags) 2>/dev/null`.strip
       if result.empty?
-        return nil
+        nil
       else
         version = `curl-config --vernum`.strip
         if version >= '070c01'
           # Curl >= 7.12.1 supports curl_easy_reset()
           result << " -DHAS_CURL_EASY_RESET"
         end
-        return result
+        result
       end
     end
     memoize :curl_flags
@@ -48,16 +48,16 @@ module PhusionPassenger
         result << ' -framework Foundation -framework SystemConfiguration'
       end
       if result.empty?
-        return nil
+        nil
       else
-        return result
+        result
       end
     end
     memoize :curl_libs
 
     def self.curl_supports_ssl?
       features = `(curl-config --feature) 2>/dev/null`
-      return features =~ /SSL/
+      features =~ /SSL/
     end
     memoize :curl_supports_ssl?
   end

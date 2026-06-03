@@ -85,7 +85,7 @@ module PhusionPassenger
       else
         ruby_arch = cpu_architectures[0]
       end
-      return "#{ruby_engine}-#{ruby_ext_version}-#{ruby_arch}-#{os_name_simple}"
+      "#{ruby_engine}-#{ruby_ext_version}-#{ruby_arch}-#{os_name_simple}"
     end
     memoize :ruby_extension_binary_compatibility_id
 
@@ -124,19 +124,19 @@ module PhusionPassenger
         major, minor, *rest = os_version.split(".").map(&:to_i)
         os_version_string = if major >= 11
                        major
-                     elsif minor >= 16
+        elsif minor >= 16
                        # 10.16 -> 11
                        # 10.17 -> 12
                        minor - 5
-                     else
+        else
                        "#{major}.#{minor}"
-                     end
+        end
         os_runtime = os_version_string.to_s
       else
         os_runtime = nil
       end
       os_arch = cpu_architectures[0]
-      return [os_arch, os_name_simple, os_runtime].compact.join("-")
+      [ os_arch, os_name_simple, os_runtime ].compact.join("-")
     end
     memoize :cxx_binary_compatibility_id
   end

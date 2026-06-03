@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2017-2025 Asynchronous B.V.
 #
@@ -41,14 +42,14 @@ module PhusionPassenger
         network_interfaces = PlatformInfo.network_interfaces
         default_network_interfaces = PlatformInfo.default_network_interfaces
         puts PhusionPassenger::Utils::JSON.generate(
-          :ipv4_addresses => ip_addresses(network_interfaces, :ipv4, default_network_interfaces),
-          :ipv6_addresses => ip_addresses(network_interfaces, :ipv6, default_network_interfaces),
-          :default_ipv4 => default_ip(network_interfaces, :ipv4, default_network_interfaces),
-          :default_ipv6 => default_ip(network_interfaces, :ipv6, default_network_interfaces),
-          :network_interfaces => network_interfaces,
-          :hostname => Socket.gethostname,
-          :fqdn => fqdn,
-          :os => os
+          ipv4_addresses: ip_addresses(network_interfaces, :ipv4, default_network_interfaces),
+          ipv6_addresses: ip_addresses(network_interfaces, :ipv6, default_network_interfaces),
+          default_ipv4: default_ip(network_interfaces, :ipv4, default_network_interfaces),
+          default_ipv6: default_ip(network_interfaces, :ipv6, default_network_interfaces),
+          network_interfaces: network_interfaces,
+          hostname: Socket.gethostname,
+          fqdn: fqdn,
+          os: os
         )
       end
 
@@ -91,11 +92,11 @@ module PhusionPassenger
 
       def os
         {
-          :simple_name => PlatformInfo.os_name_simple,
-          :full_name => PlatformInfo.os_name_full,
-          :version => PlatformInfo.os_version,
-          :linux_distro => PlatformInfo.linux_distro,
-          :linux_distro_tags => PlatformInfo.linux_distro_tags
+          simple_name: PlatformInfo.os_name_simple,
+          full_name: PlatformInfo.os_name_full,
+          version: PlatformInfo.os_version,
+          linux_distro: PlatformInfo.linux_distro,
+          linux_distro_tags: PlatformInfo.linux_distro_tags,
         }
       end
     end

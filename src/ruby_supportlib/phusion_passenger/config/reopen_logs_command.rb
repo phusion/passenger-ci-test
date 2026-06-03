@@ -137,7 +137,7 @@ module PhusionPassenger
       end
 
       def should_ignore_error?(json)
-        return @options[:ignore_logs_not_available] && json["code"] == "NO_LOG_FILE"
+        @options[:ignore_logs_not_available] && json["code"] == "NO_LOG_FILE"
       end
     end
 

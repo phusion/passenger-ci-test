@@ -40,7 +40,7 @@ module PhusionPassenger
           cflags = "-I/opt/local/include"
         end
       end
-      return "#{cflags} -DPCRE2_CODE_UNIT_WIDTH=8"
+      "#{cflags} -DPCRE2_CODE_UNIT_WIDTH=8"
     end
     memoize :pcre_extra_cflags
 

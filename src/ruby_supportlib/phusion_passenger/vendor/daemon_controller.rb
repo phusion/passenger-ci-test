@@ -34,9 +34,9 @@ module PhusionPassenger
 
 # Main daemon controller object. See the README for an introduction and tutorial.
 class DaemonController
-  ALLOWED_CONNECT_EXCEPTIONS = [Errno::ECONNREFUSED, Errno::ENETUNREACH,
+  ALLOWED_CONNECT_EXCEPTIONS = [ Errno::ECONNREFUSED, Errno::ENETUNREACH,
     Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::EINVAL,
-    Errno::EADDRNOTAVAIL]
+    Errno::EADDRNOTAVAIL ]
 
   SPAWNER_FILE = File.expand_path(File.join(File.dirname(__FILE__),
     "daemon_controller", "spawn.rb"))
@@ -194,7 +194,7 @@ class DaemonController
   #  This must be a Hash.  The hash will contain the environment variables available
   #  to be made available to the daemon. Hash keys must be strings, not symbols.
   def initialize(options)
-    [:identifier, :start_command, :ping_command, :pid_file, :log_file].each do |option|
+    [ :identifier, :start_command, :ping_command, :pid_file, :log_file ].each do |option|
       if !options.has_key?(option)
         raise ArgumentError, "The ':#{option}' option is mandatory."
       end
@@ -642,7 +642,7 @@ private
       path == "/dev/stderr" ||
       path == "/dev/fd/1" ||
       path == "/dev/fd/2" ||
-      path =~ %r(\A/proc/([0-9]+|self)/fd/[12]\Z)
+      path =~ %r{\A/proc/([0-9]+|self)/fd/[12]\Z}
   end
 
   def run_command_while_capturing_output(command)
@@ -655,10 +655,10 @@ private
     if self.class.fork_supported? || self.class.spawn_supported?
       if Process.respond_to?(:spawn)
         options = {
-          :in  => "/dev/null",
-          :out => tempfile_path,
-          :err => tempfile_path,
-          :close_others => true
+          in: "/dev/null",
+          out: tempfile_path,
+          err: tempfile_path,
+          close_others: true,
         }
         @keep_ios.each do |io|
           options[io] = io
@@ -745,10 +745,10 @@ private
     if self.class.fork_supported? || self.class.spawn_supported?
       if Process.respond_to?(:spawn)
         options = {
-          :in  => "/dev/null",
-          :out => :out,
-          :err => :err,
-          :close_others => true
+          in: "/dev/null",
+          out: :out,
+          err: :err,
+          close_others: true,
         }
         @keep_ios.each do |io|
           options[io] = io
@@ -911,7 +911,7 @@ private
         begin
           socket.connect_nonblock(sockaddr)
         rescue Errno::ENOENT, Errno::EINPROGRESS, Errno::EAGAIN, Errno::EWOULDBLOCK
-          if select(nil, [socket], nil, 0.1)
+          if select(nil, [ socket ], nil, 0.1)
             begin
               socket.connect_nonblock(sockaddr)
             rescue Errno::EISCONN

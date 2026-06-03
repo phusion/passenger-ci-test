@@ -38,7 +38,7 @@ module PhusionPassenger
       include PhusionPassenger::Config::Utils
 
       def self.create_default_options
-        { :agent_name => "core_api" }
+        { agent_name: "core_api" }
       end
 
       def run

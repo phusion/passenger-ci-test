@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2013-2025 Asynchronous B.V.
 #
@@ -35,9 +36,9 @@ module PhusionPassenger
 
         def self.create(choice)
           if choice.is_a?(Choice)
-            return choice
+            choice
           else
-            return Choice.new(choice)
+            Choice.new(choice)
           end
         end
 
@@ -74,7 +75,7 @@ module PhusionPassenger
               clear_screen if !done
             end
             if @mode == :single_choice
-              [@pointer, @choices[@pointer].name]
+              [ @pointer, @choices[@pointer].name ]
             else
               nil
             end
@@ -91,11 +92,11 @@ module PhusionPassenger
       end
 
       def [](name)
-        return @index[name]
+        @index[name]
       end
 
       def selected_choices
-        @choices.find_all{ |c| c.checked? }.map{ |c| c.name }
+        @choices.find_all { |c| c.checked? }.map { |c| c.name }
       end
 
     private
@@ -106,7 +107,7 @@ module PhusionPassenger
         @choices.each do |choice|
           index[choice.name] = choice
         end
-        return index
+        index
       end
 
       def process_input
@@ -133,9 +134,9 @@ module PhusionPassenger
         if getchar(STDIN) == "["
           case getchar(STDIN)
           when "A" # up
-            @pointer = [@pointer - 1, 0].max
+            @pointer = [ @pointer - 1, 0 ].max
           when "B" # down
-            @pointer = [@pointer + 1, @choices.size - 1].min
+            @pointer = [ @pointer + 1, @choices.size - 1 ].min
           end
         end
       end
@@ -190,9 +191,9 @@ module PhusionPassenger
 
       def maybe_utf8(utf8, plain)
         if ENV['UTF8_MENUS'] == '0'
-          return plain
+          plain
         else
-          return utf8
+          utf8
         end
       end
 
@@ -205,13 +206,13 @@ module PhusionPassenger
       end
 
       def move_up
-        return "\x1b[0A"
+        "\x1b[0A"
       end
 
       def getchar(io)
         char = io.getc
         char = char.chr if char.is_a?(Integer)
-        return char
+        char
       end
 
       if JRUBY

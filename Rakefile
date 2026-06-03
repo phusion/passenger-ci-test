@@ -76,7 +76,7 @@ task :default do
 end
 
 desc "Remove compiled files"
-task :clean => 'clean:cache' do
+task clean: 'clean:cache' do
   if OUTPUT_DIR == "buildout/"
     sh "rm -rf buildout"
   end

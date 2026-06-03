@@ -1,4 +1,5 @@
 # encoding: binary
+
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2010-2025 Asynchronous B.V.
 #
@@ -41,7 +42,7 @@ module PhusionPassenger
     module ThreadHandlerExtension
       # Constants which exist to relieve Ruby's garbage collector.
       RACK_VERSION       = "rack.version"        # :nodoc:
-      RACK_VERSION_VALUE = [1, 3]                # :nodoc:
+      RACK_VERSION_VALUE = [ 1, 3 ]                # :nodoc:
       RACK_INPUT         = "rack.input"          # :nodoc:
       RACK_ERRORS        = "rack.errors"         # :nodoc:
       RACK_MULTITHREAD   = "rack.multithread"    # :nodoc:
@@ -56,9 +57,9 @@ module PhusionPassenger
       SCRIPT_NAME        = "SCRIPT_NAME"         # :nodoc:
       REQUEST_METHOD = "REQUEST_METHOD"          # :nodoc:
       TRANSFER_ENCODING_HEADER  = "Transfer-Encoding"   # :nodoc:
-      TRANSFER_ENCODING_HEADERS = ["Transfer-Encoding", "Transfer-encoding", "transfer-encoding"] # :nodoc:
+      TRANSFER_ENCODING_HEADERS = [ "Transfer-Encoding", "Transfer-encoding", "transfer-encoding" ] # :nodoc:
       CONTENT_LENGTH_HEADER     = "Content-Length"      # :nodoc:
-      CONTENT_LENGTH_HEADERS    = ["Content-Length", "Content-length", "content-length"] # :nodoc:
+      CONTENT_LENGTH_HEADERS    = [ "Content-Length", "Content-length", "content-length" ] # :nodoc:
       X_SENDFILE_HEADER         = "X-Sendfile"          # :nodoc:
       X_ACCEL_REDIRECT_HEADER   = "X-Accel-Redirect"    # :nodoc:
       CONTENT_LENGTH_HEADER_AND_SEPARATOR      = "Content-Length: " # :nodoc
@@ -191,7 +192,7 @@ module PhusionPassenger
         # can respond to #each.
         output_body = should_output_body?(status, is_head_request)
         if body.is_a?(String)
-          body = [body]
+          body = [ body ]
         elsif body.nil?
           body = []
         elsif output_body && body.is_a?(Array)
@@ -342,7 +343,7 @@ module PhusionPassenger
 
       def generate_headers_array(status, headers)
         status_str = status.to_s
-        result = ["HTTP/1.1 #{status_str} Whatever\r\n"]
+        result = [ "HTTP/1.1 #{status_str} Whatever\r\n" ]
         headers.each do |key, values|
           if values.is_a?(String)
             values = values.split(NEWLINE)
@@ -362,7 +363,7 @@ module PhusionPassenger
             result << CRLF
           end
         end
-        return result
+        result
       end
 
       def lookup_header(haystack, needles)
@@ -383,7 +384,7 @@ module PhusionPassenger
       end
 
       def chunk_data(data, size)
-        [size.to_s(16), CRLF, data, CRLF]
+        [ size.to_s(16), CRLF, data, CRLF ]
       end
 
       # Called when body is written out successfully. Indicates that we should

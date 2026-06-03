@@ -79,7 +79,7 @@ module PhusionPassenger
       when 'linux'
         # Parse LSB (applicable to e.g. Ubuntu)
         if read_file('/etc/lsb-release') =~ /DISTRIB_RELEASE=(.+)/
-          version = $1.delete(%q['"])
+          version = $1.delete(%q('"))
           return VersionComparer.new(version) if !version.empty?
         end
 
@@ -106,9 +106,9 @@ module PhusionPassenger
     # The current platform's shared library extension ('so' on most Unices).
     def self.library_extension
       if os_name_simple == "macosx"
-        return "bundle"
+        "bundle"
       else
-        return "so"
+        "so"
       end
     end
 
@@ -120,11 +120,11 @@ module PhusionPassenger
       if result = find_command("uname")
         result
       elsif File.exist?("/bin/uname")
-        return "/bin/uname"
+        "/bin/uname"
       elsif File.exist?("/usr/bin/uname")
-        return "/usr/bin/uname"
+        "/usr/bin/uname"
       else
-        return nil
+        nil
       end
     end
 
@@ -162,21 +162,21 @@ module PhusionPassenger
         if major >= 11 || (major == 10 && minor >= 16)
           # Since Big Sur aarch64 is supported, and default on m1 macs.
           if `#{uname_command} -m` =~ /arm64/
-            ["arm64", "x86_64"]
+            [ "arm64", "x86_64" ]
           elsif `sysctl -in sysctl.proc_translated` == "1"
-            ["arm64", "x86_64"]
+            [ "arm64", "x86_64" ]
           else
-            ["x86_64", "arm64"]
+            [ "x86_64", "arm64" ]
           end
         elsif minor == 15
           # Since Catalina x86 is gone.
-          ["x86_64"]
+          [ "x86_64" ]
         elsif minor >= 6
           # Since Snow Leopard x86_64 is the default on intel macs.
-          ["x86_64", "x86"]
+          [ "x86_64", "x86" ]
         else
           # Before Snow Leopard x86 was the default.
-          ["x86", "x86_64"]
+          [ "x86", "x86_64" ]
         end
       else
         uname = uname_command
@@ -199,13 +199,13 @@ module PhusionPassenger
           # a CPU that supports both x86 and x86_64, but we're not gonna
           # go through the trouble of checking that. The main architecture
           # is what we usually care about.
-          ["x86"]
+          [ "x86" ]
         elsif arch == "x86_64"
           # I don't think there's a single x86_64 CPU out there
           # that doesn't support x86 as well.
-          ["x86_64", "x86"]
+          [ "x86_64", "x86" ]
         else
-          [arch]
+          [ arch ]
         end
       end
     end
@@ -217,7 +217,7 @@ module PhusionPassenger
     end
 
     def self.requires_no_tls_direct_seg_refs?
-      return File.exist?("/proc/xen/capabilities") && cpu_architectures[0] == "x86"
+      File.exist?("/proc/xen/capabilities") && cpu_architectures[0] == "x86"
     end
     memoize :requires_no_tls_direct_seg_refs?, true
 

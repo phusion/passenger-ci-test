@@ -1,4 +1,5 @@
 # encoding: binary
+
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2011-2025 Asynchronous B.V.
 #
@@ -77,7 +78,7 @@ module PhusionPassenger
 
     def check_rvm_using_wrapper_script(options)
       ruby = options["ruby"]
-      if ruby =~ %r(/\.?rvm/) && ruby =~ %r(/bin/ruby$)
+      if ruby =~ %r{/\.?rvm/} && ruby =~ %r{/bin/ruby$}
         case options["integration_mode"] || DEFAULT_INTEGRATION_MODE
         when "nginx"
           passenger_ruby = "passenger_ruby"
@@ -91,16 +92,14 @@ module PhusionPassenger
         end
 
         log_error_to_response_dir(
-          :summary => "#{passenger_ruby} must be set to an RVM wrapper script instead of a raw Ruby binary",
+          summary: "#{passenger_ruby} must be set to an RVM wrapper script instead of a raw Ruby binary",
 
-          :problem_description_html =>
-            "You've set the <code>#{h passenger_ruby}</code> option to <code>#{h ruby}</code>. " \
+          problem_description_html:             "You've set the <code>#{h passenger_ruby}</code> option to <code>#{h ruby}</code>. " \
             'However, because you are using RVM, this is not allowed: the option must point to ' \
             'an RVM wrapper script, not a raw Ruby binary. This is because RVM is implemented ' \
             "through various environment variables, which are set through the wrapper script.\n",
 
-          :solution_description_html =>
-            "To find out the correct value for <code>#{h passenger_ruby}</code>, please read " \
+          solution_description_html:             "To find out the correct value for <code>#{h passenger_ruby}</code>, please read " \
             "<a href=\"#{h passenger_ruby_doc}\">its documentation entry</a>."
         )
         abort
@@ -267,15 +266,15 @@ module PhusionPassenger
     end
 
     def advertise_sockets(_options, request_handler)
-      json = { :sockets => [] }
+      json = { sockets: [] }
       request_handler.server_sockets.each_pair do |name, options|
         concurrency = PhusionPassenger.advertised_concurrency_level || options[:concurrency]
         json[:sockets] << {
-          :name => name,
-          :address => options[:address],
-          :protocol => options[:protocol],
-          :concurrency => concurrency,
-          :accept_http_requests => !!options[:accept_http_requests]
+          name: name,
+          address: options[:address],
+          protocol: options[:protocol],
+          concurrency: concurrency,
+          accept_http_requests: !!options[:accept_http_requests],
         }
       end
 
@@ -581,7 +580,7 @@ module PhusionPassenger
 
         problem_description = String.new
 
-        problem_description << %Q{
+        problem_description << %Q(
           <h2>Bundler was unable to find one of the gems defined in the Gemfile</h2>
           <table class="table table-bordered table-hover problem-causes">
             <thead>
@@ -591,7 +590,7 @@ module PhusionPassenger
               </tr>
             </thead>
             <tbody>
-        }
+        )
 
         problem_description << %Q{
           <tr class="cause">
@@ -617,17 +616,17 @@ module PhusionPassenger
           </tr>
         }
 
-        problem_description << %Q{
+        problem_description << %Q(
           <tr class="cause">
             <td>
               If the necessary gems are installed, but Bundler may not have
               permissions to access them.
-        }
+        )
         if bundle_path
-          problem_description << %Q{
+          problem_description << %Q(
             <br>
             <small>Bundler tried to load the gems from <code>#{h bundle_path}</code>.</small>
-          }
+          )
         end
         problem_description << %Q{
             </td>
@@ -737,7 +736,7 @@ module PhusionPassenger
           }
         end
 
-        if ruby =~ %r(^/usr/local/rvm/)
+        if ruby =~ %r{^/usr/local/rvm/}
           problem_description << %Q{
             <tr class="cause">
               <td>
@@ -769,14 +768,14 @@ module PhusionPassenger
                     <li>Login as #{h whoami}.</li>
           }
           if PlatformInfo.rvm_installation_mode == :multi
-            problem_description << %Q{
+            problem_description << %Q(
                     <li>
                       Enable RVM mixed mode by running:
                       <pre>rvm user gemsets</pre>
                     </li>
-            }
+            )
           end
-          problem_description << %Q{
+          problem_description << %Q(
                     <li>
                       Run this to find out what to set
                       <a href="#{h passenger_ruby_doc}">#{h passenger_ruby}</a> to:
@@ -786,11 +785,11 @@ module PhusionPassenger
                 </div>
               </td>
             </tr>
-          }
+          )
         end
 
         if PlatformInfo.in_rvm?
-          problem_description << %Q{
+          problem_description << %Q(
             <tr class="cause">
               <td>
                 The RVM gemset may be broken.
@@ -801,7 +800,7 @@ module PhusionPassenger
                 </a>
               </td>
             </tr>
-          }
+          )
         end
 
         problem_description << %Q{
@@ -868,7 +867,7 @@ module PhusionPassenger
             " setting. The documentation for that setting will teach you how to refer" \
             " to the proper gemset.</p>"
         end
-        if ruby =~ %r(^/usr/local/rvm/)
+        if ruby =~ %r{^/usr/local/rvm/}
           solution_description <<
             "<h3>Is your gem bundle installed to the home directory, while at the same" \
             " time you are using a Ruby that is installed by RVM in a system-wide manner?</h3>" \
@@ -906,7 +905,7 @@ module PhusionPassenger
 
     def check_execution_environment_solution_description(passenger_user, passenger_user_doc, bundle_path)
       result = String.new
-      result << %Q{
+      result << %Q(
         <h3>Check the application process's execution environment</h3>
         <p>
           Is the application running under the expected execution environment?
@@ -916,27 +915,27 @@ module PhusionPassenger
           &raquo; 'Subprocess' tab and double check all information there &mdash; is
           everything as expected?
         </p>
-      }
+      )
       if passenger_user
-        result << %Q{
+        result << %Q(
           <p>
             If the application is not supposed to run as <code>#{h whoami}</code>,
             then you can configure this via the
             <a href="#{h passenger_user_doc}">#{h passenger_user}</a>
             setting.
           </p>
-        }
+        )
       end
-      result << %Q{
+      result << %Q(
         <h3>Check that the application has permissions to access the directory from which Bundler loads gems</h3>
         <p>
           Please check whether the application, which is running as the
           <code>#{h whoami}</code> user, has permissions to access
-      }
+      )
       if bundle_path
-        result << %Q{
+        result << %Q(
           <code>#{h bundle_path}</code>.
-        }
+        )
       else
         result << %Q{
           the directory that Bundler tries to load gems from. Unfortunately
@@ -946,9 +945,9 @@ module PhusionPassenger
           can figure out the path for you).
         }
       end
-      result << %Q{
+      result << %Q(
         </p>
-      }
+      )
       result
     end
 

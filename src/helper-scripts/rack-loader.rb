@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # encoding: binary
+
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2013-2025 Asynchronous B.V.
 #

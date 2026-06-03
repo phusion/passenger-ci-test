@@ -35,7 +35,7 @@ module PhusionPassenger
       include InstallationUtils
 
       def run
-        @options = { :auto => !STDIN.tty? || !STDOUT.tty?, :colorize => :auto, :force_tip => true }
+        @options = { auto: !STDIN.tty? || !STDOUT.tty?, colorize: :auto, force_tip: true }
         parse_options
         initialize_objects
         sanity_check

@@ -1,4 +1,5 @@
 # encoding: binary
+
 #
 # Copyright (c) 2016-2025 Asynchronous B.V.
 #
@@ -65,7 +66,7 @@ module CrashWatch
       result = []
       while !done
         begin
-          if select([@out], nil, nil, timeout)
+          if select([ @out ], nil, nil, timeout)
             line = @out.readline.chomp
             line.sub!(/^LLDB:/, '')
             puts "lldb read #{line.inspect}" if @debug

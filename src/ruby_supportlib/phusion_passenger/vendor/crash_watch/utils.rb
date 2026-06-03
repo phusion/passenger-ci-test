@@ -1,4 +1,5 @@
 # encoding: binary
+
 #
 # Copyright (c) 2016-2025 Asynchronous B.V.
 #
@@ -62,7 +63,7 @@ module CrashWatch
           STDIN  => a,
           STDOUT => d,
           STDERR => d,
-          :close_others => true
+          :close_others => true,
         }
         pid = Process.spawn(*args)
       else
@@ -79,7 +80,7 @@ module CrashWatch
       d.close
       b.binmode
       c.binmode
-      [pid, b, c]
+      [ pid, b, c ]
     end
 
     def find_signal_name(signo)

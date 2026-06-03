@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 PhusionPassenger.require_passenger_lib 'platform_info/ruby'
 PhusionPassenger.require_passenger_lib 'platform_info/linux'
 PhusionPassenger.require_passenger_lib 'platform_info/compiler'
@@ -200,7 +201,7 @@ module PhusionPassenger
         def check_for_ruby_library(name)
           begin
             require(name)
-            { :found => true }
+            { found: true }
           rescue LoadError
             if defined?(Gem)
               false
@@ -208,7 +209,7 @@ module PhusionPassenger
               begin
                 require 'rubygems'
                 require(name)
-                { :found => true }
+                { found: true }
               rescue LoadError
                 false
               end
@@ -291,7 +292,7 @@ module PhusionPassenger
         end
 
         def gem_command
-          PlatformInfo.gem_command(:sudo => true) || 'gem'
+          PlatformInfo.gem_command(sudo: true) || 'gem'
         end
 
         def find_command(command, *args)
@@ -334,7 +335,7 @@ module PhusionPassenger
               raise "Cannot find depcheck spec #{identifier.inspect}" if !dep
               puts_header "Checking for #{dep.name}..."
               result = dep.check
-              result = { :found => false } if !result
+              result = { found: false } if !result
 
               if result[:found] && !result[:error]
                 puts_detail "Found: <green>yes</green>"
@@ -355,7 +356,7 @@ module PhusionPassenger
               end
             end
 
-            return @missing_dependencies.empty?
+            @missing_dependencies.empty?
           ensure
             PlatformInfo.log_implementation = old_log_impl
           end

@@ -44,15 +44,15 @@ module PhusionPassenger
 
       def run
         @options = {
-          :log_level => Logger::INFO,
-          :colors => :auto,
-          :error_colors => true,
-          :show_download_progress => STDOUT.tty?,
-          :compilation_tip => true,
-          :force_tip => true,
-          :use_cache => true,
-          :connect_timeout => 30,
-          :idle_timeout => 30
+          log_level: Logger::INFO,
+          colors: :auto,
+          error_colors: true,
+          show_download_progress: STDOUT.tty?,
+          compilation_tip: true,
+          force_tip: true,
+          use_cache: true,
+          connect_timeout: 30,
+          idle_timeout: 30,
         }
         parse_options
         initialize_objects
@@ -149,7 +149,7 @@ module PhusionPassenger
 
       def initialize_objects
         if @options[:url_root]
-          @sites = [{ :url => @options[:url_root] }]
+          @sites = [ { url: @options[:url_root] } ]
         else
           @sites = PhusionPassenger.binaries_sites
         end
@@ -250,7 +250,7 @@ module PhusionPassenger
             @logger.warn "Trying next mirror..."
           end
         end
-        return false
+        false
       end
 
       def real_download_support_file(site, name, output)
@@ -260,9 +260,9 @@ module PhusionPassenger
           url = "#{site[:url]}/#{VERSION_STRING}/#{name}"
         end
         options = {
-          :cacert => site[:cacert],
-          :logger => @logger,
-          :use_cache => @options[:use_cache]
+          cacert: site[:cacert],
+          logger: @logger,
+          use_cache: @options[:use_cache],
         }
         # connect_timeout and idle_timeout may be nil or 0, which means
         # that the default Utils::Download timeouts should be used.
@@ -272,12 +272,12 @@ module PhusionPassenger
         if @options[:idle_timeout] && @options[:idle_timeout] != 0
           options[:idle_timeout] = @options[:idle_timeout]
         end
-        return PhusionPassenger::Utils::Download.download(url, output, options)
+        PhusionPassenger::Utils::Download.download(url, output, options)
       end
 
       def test_binary(filename)
         output = `env LD_BIND_NOW=1 DYLD_BIND_AT_LAUNCH=1 #{Shellwords.escape(filename)} test-binary`
-        return $? && $?.exitstatus == 0 && output == "PASS\n"
+        $? && $?.exitstatus == 0 && output == "PASS\n"
       end
 
       def compile_tip_message
@@ -292,7 +292,7 @@ module PhusionPassenger
           result << "organization who packaged #{PROGRAM_NAME} for help on this "
           result << "problem."
         end
-        return result
+        result
       end
 
       # Override InstallationUtils

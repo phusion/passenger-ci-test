@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 #
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2014-2025 Asynchronous B.V.
@@ -60,23 +61,23 @@ module PhusionPassenger
             if result == false
               print_installation_error_header
               render_template 'installation_utils/support_binaries_dir_not_writable_despite_running_as_root',
-                :dir => PhusionPassenger.support_binaries_dir,
-                :myself => myself
+                dir: PhusionPassenger.support_binaries_dir,
+                myself: myself
             else
               render_template 'installation_utils/unexpected_filesystem_problem',
-                :dir => PhusionPassenger.support_binaries_dir,
-                :exception => result
+                dir: PhusionPassenger.support_binaries_dir,
+                exception: result
             end
             abort
           else
-            return find_or_create_writable_user_support_binaries_dir!
+            find_or_create_writable_user_support_binaries_dir!
           end
         else
           if Process.euid == 0
             mkdir_p_preserve_parent_owner(PhusionPassenger.support_binaries_dir)
-            return PhusionPassenger.support_binaries_dir
+            PhusionPassenger.support_binaries_dir
           else
-            return find_or_create_writable_user_support_binaries_dir!
+            find_or_create_writable_user_support_binaries_dir!
           end
         end
       end
@@ -101,7 +102,7 @@ module PhusionPassenger
           puts "---------------------------------------"
           puts
           render_template 'installation_utils/download_tool_missing',
-            :runner => runner
+            runner: runner
           abort
         end
       end
@@ -121,14 +122,14 @@ module PhusionPassenger
       end
 
       def rake
-        return "env NOEXEC_DISABLE=1 #{PlatformInfo.rake_command}"
+        "env NOEXEC_DISABLE=1 #{PlatformInfo.rake_command}"
       end
 
       def run_rake_task!(target)
         total_lines = `#{rake} #{target} --dry-run STDERR_TO_STDOUT=1 2>&1`.split("\n").size - 1
         partial_backlog = String.new
         logfile = PhusionPassenger::Utils::TmpIO.new("passenger-install-log",
-          :mode => File::WRONLY, :unlink_immediately => false)
+          mode: File::WRONLY, unlink_immediately: false)
 
         begin
           command = "#{rake} #{target} --trace STDERR_TO_STDOUT=1 2>&1"
@@ -173,13 +174,13 @@ module PhusionPassenger
         begin
           File.new(filename, "w").close
           @logger.debug "Yes" if @logger
-          return true
+          true
         rescue Errno::EACCES
           @logger.debug "No" if @logger
-          return false
+          false
         rescue SystemCallError => e
           @logger.warn "Unable to check whether we can write to #{path}: #{e}" if @logger
-          return e
+          e
         ensure
           File.unlink(filename) rescue nil
         end
@@ -192,7 +193,7 @@ module PhusionPassenger
         result = directory_writable?(PhusionPassenger.user_support_binaries_dir)
         case result
         when true
-          return PhusionPassenger.user_support_binaries_dir
+          PhusionPassenger.user_support_binaries_dir
         when false
           print_installation_error_header
           render_template 'installation_utils/user_support_binaries_dir_not_writable'
@@ -200,8 +201,8 @@ module PhusionPassenger
         else
           print_installation_error_header
           render_template 'installation_utils/unexpected_filesystem_problem',
-            :dir => PhusionPassenger.support_binaries_dir,
-            :exception => result
+            dir: PhusionPassenger.support_binaries_dir,
+            exception: result
           abort
         end
       end
@@ -213,14 +214,14 @@ module PhusionPassenger
         rescue Errno::EACCES
           print_installation_error_header
           render_template 'installation_utils/cannot_create_user_support_binaries_dir',
-            :dir => dir,
-            :myself => myself
+            dir: dir,
+            myself: myself
           abort
         rescue SystemCallError => e
           print_installation_error_header
           render_template 'installation_utils/unexpected_filesystem_problem',
-            :dir => dir,
-            :exception => e
+            dir: dir,
+            exception: e
           abort
         end
       end
@@ -242,18 +243,18 @@ module PhusionPassenger
       end
 
       def myself
-        return `whoami`.strip
+        `whoami`.strip
       end
 
       def render_template(name, options = {})
-        options.merge!(:colors => @colors || PhusionPassenger::Utils::AnsiColors.new)
+        options.merge!(colors: @colors || PhusionPassenger::Utils::AnsiColors.new)
         # This check here is necessary for NginxEngineCompiler. NginxEngineCompiler
         # derives from AbstractInstaller but also includes InstallationUtils. We want
         # the AbstractInstaller methods to work when they call render_template.
         if !File.exist?("#{PhusionPassenger.resources_dir}/templates/#{name}.txt.erb")
           name = "config/#{name}"
         end
-        puts ConsoleTextTemplate.new({ :file => name }, options).result
+        puts ConsoleTextTemplate.new({ file: name }, options).result
       end
     end
 

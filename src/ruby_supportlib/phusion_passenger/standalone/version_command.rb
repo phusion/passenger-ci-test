@@ -30,7 +30,7 @@ module PhusionPassenger
 
     class VersionCommand < Command
       def run
-        command = PhusionPassenger::Config::AboutCommand.new(['version'])
+        command = PhusionPassenger::Config::AboutCommand.new([ 'version' ])
         command.run
       end
     end
