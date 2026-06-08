@@ -1,6 +1,6 @@
 Release 6.1.5 (Not yet released)
 -------------
- * 
+ * [Ubuntu] Rebuild packages against broken Nginx packages that Ubuntu is shipping. Closes GH-2662.
 
 
 Release 6.1.4
