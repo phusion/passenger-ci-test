@@ -35,13 +35,13 @@ module PhusionPassenger
   VERSION_STRING = '6.1.6'
 
   # Tip: find the SHA-256 with ./dev/nginx_version_sha256 <VERSION>
-  PREFERRED_NGINX_VERSION = '1.30.2'
-  NGINX_SHA256_CHECKSUM = '7df3090907fca3cc0e456d6dc00ceb230da74ea88026ceff0affc29dbbd9ac4c'
+  PREFERRED_NGINX_VERSION = '1.30.3'
+  NGINX_SHA256_CHECKSUM = 'e5823dc6f45610993def93ebf6cfce68264af4958c77e874b7d20f3709001b8f'
 
   # Packaging may be locked to an older version due to the specific module configuration being
   # incompatible with the version we prefer (latest stable).
-  PACKAGING_PREFERRED_NGINX_VERSION = '1.30.2'
-  PACKAGING_NGINX_SHA256_CHECKSUM = '7df3090907fca3cc0e456d6dc00ceb230da74ea88026ceff0affc29dbbd9ac4c'
+  PACKAGING_PREFERRED_NGINX_VERSION = '1.30.3'
+  PACKAGING_NGINX_SHA256_CHECKSUM = 'e5823dc6f45610993def93ebf6cfce68264af4958c77e874b7d20f3709001b8f'
 
   # sha256sum of the .tar.gz
   PREFERRED_PCRE_VERSION  = '10.47'
