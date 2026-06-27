@@ -1,4 +1,9 @@
-Release 6.1.6 (Not yet released)
+Release 6.1.7 (Not yet released)
+-------------
+ * 
+
+
+Release 6.1.6
 -------------
  * [Nginx] Upgrades preferred Nginx to 1.30.3 from 1.30.2.
  * [Nginx] Build Nginx dynamic modules against nginx-mod-devel sources on Enterprise Linux. Closes GH-2664.
