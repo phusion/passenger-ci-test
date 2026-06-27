@@ -98,6 +98,7 @@ jobs:
       - name: Update cache
         run: ./dev/ci/update-cache-az-blob-storage
         timeout-minutes: 3
+        continue-on-error: true
         env:
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_CI_STORAGE_CONNECTION_STRING }}
           CONTAINER_NAME: ${{ vars.SCCACHE_AZURE_BLOB_CONTAINER }}
